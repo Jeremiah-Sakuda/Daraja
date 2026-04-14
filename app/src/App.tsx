@@ -5,6 +5,7 @@ import { InterviewSession } from './components/interview/InterviewSession';
 import { WorkflowSelection } from './pages/WorkflowSelection';
 import { QuickTranslate } from './pages/QuickTranslate';
 import { History } from './pages/History';
+import { Settings } from './pages/Settings';
 import { useOfflineSync } from './hooks/useOfflineSync';
 
 // Home page component
@@ -103,17 +104,6 @@ function LanguagePairCard({ source, target, status }: LanguagePairCardProps) {
   );
 }
 
-// Settings page placeholder
-function SettingsPage() {
-  return (
-    <div className="flex-1 p-6">
-      <h1 className="section-header">Settings</h1>
-      <div className="card">
-        <p className="text-daraja-600">Settings coming soon...</p>
-      </div>
-    </div>
-  );
-}
 
 function App() {
   const { isOnline, pendingCount } = useOfflineSync();
@@ -129,7 +119,7 @@ function App() {
           <Route path="/interview/:workflowType" element={<InterviewSession />} />
           <Route path="/quick-translate" element={<QuickTranslate />} />
           <Route path="/history" element={<History />} />
-          <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/settings" element={<Settings />} />
         </Routes>
       </main>
 
