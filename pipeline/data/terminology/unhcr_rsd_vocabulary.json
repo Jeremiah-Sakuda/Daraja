@@ -1,0 +1,111 @@
+{
+  "id": "unhcr-rsd-vocabulary",
+  "name": "UNHCR Refugee Status Determination Vocabulary",
+  "version": "1.0.0",
+  "description": "Key terminology for refugee status determination interviews and asylum processes",
+  "domain": "legal",
+  "categories": {
+    "legal_status": [
+      {"en": "refugee", "so": "qaxooti", "sw": "mkimbizi"},
+      {"en": "asylum seeker", "so": "magangalyo doon", "sw": "mwombaji hifadhi"},
+      {"en": "stateless person", "so": "qof aan dal lahayn", "sw": "mtu asiye na uraia"},
+      {"en": "internally displaced person", "so": "qof gudaha looga barakiciyey", "sw": "wakimbizi wa ndani"},
+      {"en": "returnee", "so": "qof soo laabtay", "sw": "mrejeshwa"},
+      {"en": "applicant", "so": "codsade", "sw": "mwombaji"},
+      {"en": "beneficiary", "so": "ka faa'iidayste", "sw": "mnufaika"}
+    ],
+    "protection_grounds": [
+      {"en": "persecution", "so": "cadaadis", "sw": "mateso"},
+      {"en": "political opinion", "so": "ra'yi siyaasadeed", "sw": "maoni ya kisiasa"},
+      {"en": "race", "so": "jinsi", "sw": "rangi"},
+      {"en": "religion", "so": "diin", "sw": "dini"},
+      {"en": "nationality", "so": "jinsiyadda", "sw": "utaifa"},
+      {"en": "social group", "so": "koox bulsho", "sw": "kundi la kijamii"},
+      {"en": "gender-based violence", "so": "rabshada jinsiga ku saleysan", "sw": "unyanyasaji wa kijinsia"},
+      {"en": "torture", "so": "jirdil", "sw": "mateso"},
+      {"en": "threat", "so": "hanjabaad", "sw": "tishio"},
+      {"en": "fear", "so": "cabsi", "sw": "hofu"},
+      {"en": "well-founded fear", "so": "cabsi aasaas leh", "sw": "hofu yenye msingi"}
+    ],
+    "documentation": [
+      {"en": "identity document", "so": "warqad aqoonsi", "sw": "kitambulisho"},
+      {"en": "passport", "so": "baasaboor", "sw": "pasipoti"},
+      {"en": "birth certificate", "so": "shahaadada dhalashada", "sw": "cheti cha kuzaliwa"},
+      {"en": "travel document", "so": "warqad safar", "sw": "hati ya kusafiria"},
+      {"en": "registration card", "so": "kaarka diiwaangelinta", "sw": "kadi ya usajili"},
+      {"en": "refugee ID", "so": "aqoonsiga qaxootiga", "sw": "kitambulisho cha mkimbizi"},
+      {"en": "proof of registration", "so": "caddaynta diiwaangelinta", "sw": "uthibitisho wa usajili"},
+      {"en": "attestation letter", "so": "warqad caddayn", "sw": "barua ya uthibitisho"}
+    ],
+    "procedures": [
+      {"en": "registration", "so": "diiwaangelin", "sw": "usajili"},
+      {"en": "interview", "so": "wareysii", "sw": "mahojiano"},
+      {"en": "refugee status determination", "so": "go'aaminta xaaladda qaxootiga", "sw": "uamuzi wa hadhi ya ukimbizi"},
+      {"en": "appeal", "so": "racfaan", "sw": "rufaa"},
+      {"en": "decision", "so": "go'aan", "sw": "uamuzi"},
+      {"en": "positive decision", "so": "go'aan togan", "sw": "uamuzi chanya"},
+      {"en": "negative decision", "so": "go'aan diidan", "sw": "uamuzi hasi"},
+      {"en": "resettlement", "so": "dib u dejin", "sw": "makazi mapya"},
+      {"en": "voluntary repatriation", "so": "soo laabasho ikhtiyaari ah", "sw": "kurejeshwa kwa hiari"},
+      {"en": "local integration", "so": "isdhexgal maxalli ah", "sw": "kuunganishwa na jamii"}
+    ],
+    "family_relations": [
+      {"en": "spouse", "so": "xaas", "sw": "mwenzi"},
+      {"en": "husband", "so": "nin", "sw": "mume"},
+      {"en": "wife", "so": "naag", "sw": "mke"},
+      {"en": "child", "so": "ilmo", "sw": "mtoto"},
+      {"en": "children", "so": "carruur", "sw": "watoto"},
+      {"en": "parent", "so": "waalid", "sw": "mzazi"},
+      {"en": "father", "so": "aabe", "sw": "baba"},
+      {"en": "mother", "so": "hooyo", "sw": "mama"},
+      {"en": "sibling", "so": "walaal", "sw": "ndugu"},
+      {"en": "brother", "so": "walaal", "sw": "kaka"},
+      {"en": "sister", "so": "walaal", "sw": "dada"},
+      {"en": "unaccompanied minor", "so": "cunug keligiis ah", "sw": "mtoto asiye na mtu mzima"},
+      {"en": "separated child", "so": "cunug go'an", "sw": "mtoto aliyetengana"},
+      {"en": "family reunification", "so": "isku keenista qoyska", "sw": "kuungana kwa familia"}
+    ],
+    "locations": [
+      {"en": "country of origin", "so": "dalka hooyo", "sw": "nchi ya asili"},
+      {"en": "country of asylum", "so": "dalka magangelinta", "sw": "nchi ya hifadhi"},
+      {"en": "transit country", "so": "dalka gudbista", "sw": "nchi ya kupitia"},
+      {"en": "refugee camp", "so": "xerada qaxootiga", "sw": "kambi ya wakimbizi"},
+      {"en": "settlement", "so": "degaan", "sw": "makazi"},
+      {"en": "urban area", "so": "magaalo", "sw": "mjini"},
+      {"en": "border", "so": "xuduud", "sw": "mpaka"},
+      {"en": "home region", "so": "gobolka hooyo", "sw": "eneo la nyumbani"}
+    ],
+    "assistance_services": [
+      {"en": "food assistance", "so": "kaalmada cuntada", "sw": "msaada wa chakula"},
+      {"en": "shelter", "so": "hoy", "sw": "makazi"},
+      {"en": "healthcare", "so": "daryeelka caafimaadka", "sw": "huduma za afya"},
+      {"en": "education", "so": "waxbarasho", "sw": "elimu"},
+      {"en": "legal assistance", "so": "caawimo sharci", "sw": "msaada wa kisheria"},
+      {"en": "cash assistance", "so": "lacag caawin", "sw": "msaada wa fedha"},
+      {"en": "psychosocial support", "so": "taageero nafsi-bulsho", "sw": "msaada wa kisaikolojia"},
+      {"en": "livelihood support", "so": "taageero nolosha", "sw": "msaada wa maisha"}
+    ],
+    "common_interview_phrases": [
+      {"en": "Please tell me about yourself", "so": "Fadlan ii sheeg wax ku saabsan naftaada", "sw": "Tafadhali niambie kuhusu wewe"},
+      {"en": "Why did you leave your country?", "so": "Maxaad uga tagay dalkaagii?", "sw": "Kwa nini uliondoka nchi yako?"},
+      {"en": "When did you leave?", "so": "Goorma ayaad tagtay?", "sw": "Uliondoka lini?"},
+      {"en": "How did you travel?", "so": "Sidee ayaad u safartay?", "sw": "Ulisafiria vipi?"},
+      {"en": "What happened to you?", "so": "Maxaa kugu dhacay?", "sw": "Nini kilikupata?"},
+      {"en": "Were you harmed?", "so": "Miyaa laguu dhaawacay?", "sw": "Je, ulidhuru?"},
+      {"en": "Do you have any documents?", "so": "Ma haysataa warqado?", "sw": "Je, una hati zozote?"},
+      {"en": "Where is your family?", "so": "Xaggee bay joogaan qoyskaaga?", "sw": "Familia yako iko wapi?"},
+      {"en": "Can you return to your country?", "so": "Ma ku noqon kartaa dalkaagii?", "sw": "Je, unaweza kurudi nchi yako?"},
+      {"en": "Do you need an interpreter?", "so": "Ma u baahan tahay turjumaan?", "sw": "Je, unahitaji mkalimani?"},
+      {"en": "Is there anything else you want to tell me?", "so": "Ma jiraa wax kale oo aad rabto inaad ii sheegto?", "sw": "Je, kuna kitu kingine unachotaka kuniambia?"}
+    ],
+    "rights_and_principles": [
+      {"en": "non-refoulement", "so": "aan dib u celinta", "sw": "kutokurudishwa"},
+      {"en": "confidentiality", "so": "qarinnimo", "sw": "usiri"},
+      {"en": "voluntary", "so": "ikhtiyaari", "sw": "kwa hiari"},
+      {"en": "informed consent", "so": "ogolaansho aqoon leh", "sw": "kibali kwa ufahamu"},
+      {"en": "best interests of the child", "so": "danaha ugu wanaagsan ee ilmaha", "sw": "maslahi bora ya mtoto"},
+      {"en": "right to asylum", "so": "xaqa magangelinta", "sw": "haki ya hifadhi"},
+      {"en": "freedom of movement", "so": "xorriyadda dhaqdhaqaaqa", "sw": "uhuru wa kutembea"}
+    ]
+  }
+}
