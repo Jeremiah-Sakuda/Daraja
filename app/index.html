@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#B45309" />
+    <meta name="description" content="Daraja - Offline-capable translation for humanitarian language pairs" />
+
+    <!-- PWA -->
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+    <title>Daraja - Translation Bridge</title>
+
+    <style>
+      /* Critical CSS for fast first paint */
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Source Sans 3', system-ui, sans-serif;
+        background-color: #FEF9F3;
+        color: #78350F;
+      }
+
+      #root {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Loading state */
+      .loading-screen {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #FEF9F3 0%, #FEF3E2 100%);
+      }
+
+      .loading-logo {
+        width: 80px;
+        height: 80px;
+        margin-bottom: 24px;
+        animation: pulse 2s ease-in-out infinite;
+      }
+
+      .loading-text {
+        font-family: 'Libre Franklin', system-ui, sans-serif;
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #B45309;
+        margin-bottom: 8px;
+      }
+
+      .loading-subtext {
+        font-size: 0.875rem;
+        color: #92400E;
+        opacity: 0.8;
+      }
+
+      @keyframes pulse {
+        0%, 100% { transform: scale(1); opacity: 1; }
+        50% { transform: scale(1.05); opacity: 0.9; }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root">
+      <!-- Loading state shown before React hydrates -->
+      <div class="loading-screen" id="loading">
+        <svg class="loading-logo" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Bridge icon -->
+          <path d="M10 70 Q50 30, 90 70" stroke="#B45309" stroke-width="6" fill="none" stroke-linecap="round"/>
+          <line x1="25" y1="70" x2="25" y2="55" stroke="#B45309" stroke-width="4" stroke-linecap="round"/>
+          <line x1="50" y1="70" x2="50" y2="40" stroke="#B45309" stroke-width="4" stroke-linecap="round"/>
+          <line x1="75" y1="70" x2="75" y2="55" stroke="#B45309" stroke-width="4" stroke-linecap="round"/>
+          <line x1="5" y1="70" x2="95" y2="70" stroke="#B45309" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+        <div class="loading-text">Daraja</div>
+        <div class="loading-subtext">Building bridges through translation</div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // Remove loading screen once app is ready
+      window.addEventListener('DOMContentLoaded', () => {
+        const loading = document.getElementById('loading');
+        if (loading) {
+          // Small delay to ensure smooth transition
+          setTimeout(() => {
+            loading.style.opacity = '0';
+            loading.style.transition = 'opacity 0.3s ease-out';
+            setTimeout(() => loading.remove(), 300);
+          }, 100);
+        }
+      });
+    </script>
+  </body>
+</html>

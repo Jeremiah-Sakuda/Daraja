@@ -1,0 +1,253 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-daraja-50 text-daraja-900 antialiased;
+    font-feature-settings: "kern" 1, "liga" 1;
+  }
+
+  /* Better focus styles for accessibility */
+  :focus-visible {
+    @apply outline-none ring-2 ring-daraja-500 ring-offset-2 ring-offset-daraja-50;
+  }
+
+  /* Larger touch targets */
+  button, a, [role="button"] {
+    @apply min-h-touch min-w-touch;
+  }
+
+  /* Remove default button styles */
+  button {
+    @apply cursor-pointer;
+  }
+
+  /* Better form defaults */
+  input, textarea, select {
+    @apply text-base;
+  }
+
+  /* Prevent zoom on input focus (iOS) */
+  @media screen and (-webkit-min-device-pixel-ratio: 0) {
+    select,
+    textarea,
+    input {
+      font-size: 16px !important;
+    }
+  }
+}
+
+@layer components {
+  /* Primary button */
+  .btn-primary {
+    @apply inline-flex items-center justify-center
+           px-6 py-3 rounded-2xl
+           bg-daraja-600 text-white font-semibold
+           shadow-warm hover:bg-daraja-700 hover:shadow-warm-lg
+           active:scale-[0.98] transition-all duration-200
+           disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-daraja-600;
+  }
+
+  /* Secondary button */
+  .btn-secondary {
+    @apply inline-flex items-center justify-center
+           px-6 py-3 rounded-2xl
+           bg-daraja-100 text-daraja-800 font-semibold
+           border-2 border-daraja-200
+           hover:bg-daraja-200 hover:border-daraja-300
+           active:scale-[0.98] transition-all duration-200;
+  }
+
+  /* Ghost button */
+  .btn-ghost {
+    @apply inline-flex items-center justify-center
+           px-4 py-2 rounded-xl
+           text-daraja-700 font-medium
+           hover:bg-daraja-100
+           active:scale-[0.98] transition-all duration-200;
+  }
+
+  /* Icon button - large touch target */
+  .btn-icon {
+    @apply inline-flex items-center justify-center
+           w-14 h-14 rounded-full
+           bg-daraja-100 text-daraja-700
+           hover:bg-daraja-200 active:scale-95
+           transition-all duration-200;
+  }
+
+  /* Voice recording button */
+  .btn-voice {
+    @apply inline-flex items-center justify-center
+           w-20 h-20 rounded-full
+           bg-daraja-600 text-white
+           shadow-warm-lg hover:bg-daraja-700
+           active:scale-95 transition-all duration-200;
+  }
+
+  .btn-voice.recording {
+    @apply bg-alert-500 animate-recording;
+  }
+
+  /* Card component */
+  .card {
+    @apply bg-white rounded-3xl p-6
+           shadow-warm border border-daraja-100;
+  }
+
+  .card-interactive {
+    @apply card hover:shadow-warm-lg hover:border-daraja-200
+           transition-all duration-200 cursor-pointer;
+  }
+
+  /* Input field */
+  .input-field {
+    @apply w-full px-4 py-3 rounded-xl
+           bg-white border-2 border-daraja-200
+           text-daraja-900 placeholder:text-daraja-400
+           focus:border-daraja-500 focus:ring-0
+           transition-colors duration-200;
+  }
+
+  /* Text area */
+  .textarea-field {
+    @apply input-field min-h-[120px] resize-y;
+  }
+
+  /* Confidence badge */
+  .badge-confidence {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium;
+  }
+
+  .badge-confidence.high {
+    @apply bg-trust-100 text-trust-700;
+  }
+
+  .badge-confidence.medium {
+    @apply bg-caution-100 text-caution-600;
+  }
+
+  .badge-confidence.low {
+    @apply bg-alert-100 text-alert-600;
+  }
+
+  /* Progress indicator */
+  .progress-bar {
+    @apply h-2 bg-daraja-200 rounded-full overflow-hidden;
+  }
+
+  .progress-bar-fill {
+    @apply h-full bg-daraja-500 rounded-full transition-all duration-500;
+  }
+
+  /* Translation display */
+  .translation-source {
+    @apply p-4 bg-daraja-100 rounded-2xl text-daraja-800;
+  }
+
+  .translation-target {
+    @apply p-4 bg-white rounded-2xl border-2 border-daraja-200 text-daraja-900;
+  }
+
+  /* Flagged segment */
+  .flagged-segment {
+    @apply relative inline;
+  }
+
+  .flagged-segment::after {
+    @apply absolute bottom-0 left-0 right-0 h-0.5 bg-caution-500;
+    content: '';
+  }
+
+  /* Section header */
+  .section-header {
+    @apply text-2xl font-display font-semibold text-daraja-800 mb-4;
+  }
+
+  /* Form label */
+  .form-label {
+    @apply block text-sm font-medium text-daraja-700 mb-2;
+  }
+
+  /* Navigation item */
+  .nav-item {
+    @apply flex items-center gap-3 px-4 py-3 rounded-xl
+           text-daraja-700 font-medium
+           hover:bg-daraja-100 transition-colors duration-200;
+  }
+
+  .nav-item.active {
+    @apply bg-daraja-100 text-daraja-900;
+  }
+}
+
+@layer utilities {
+  /* Safe area padding for notched devices */
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-left {
+    padding-left: env(safe-area-inset-left);
+  }
+
+  .safe-right {
+    padding-right: env(safe-area-inset-right);
+  }
+
+  /* Smooth scroll container */
+  .scroll-smooth {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Text selection color */
+  .selection-daraja ::selection {
+    @apply bg-daraja-200 text-daraja-900;
+  }
+
+  /* Gradient backgrounds */
+  .bg-gradient-warm {
+    @apply bg-gradient-to-br from-daraja-50 to-daraja-100;
+  }
+
+  .bg-gradient-hero {
+    @apply bg-gradient-to-br from-daraja-100 via-daraja-50 to-white;
+  }
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: white;
+  }
+
+  .card {
+    box-shadow: none;
+    border: 1px solid #ddd;
+  }
+}
