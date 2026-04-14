@@ -1,0 +1,69 @@
+# Dependencies
+node_modules/
+.pnp/
+.pnp.js
+
+# Build outputs
+dist/
+build/
+*.egg-info/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Large data files (keep repo lightweight)
+pipeline/data/seed/
+pipeline/data/synthetic/
+*.parquet
+*.arrow
+*.csv
+!pipeline/data/evaluation/*.csv
+
+# Model weights (too large for git)
+models/weights/
+*.gguf
+*.ggml
+*.safetensors
+*.bin
+!*.Modelfile
+
+# Environment and secrets
+.env
+.env.local
+.env.*.local
+*.pem
+secrets/
+
+# IDE and editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# Testing
+coverage/
+.nyc_output/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# PWA
+sw.js
+workbox-*.js
