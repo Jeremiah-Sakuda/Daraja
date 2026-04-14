@@ -1,0 +1,447 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Legal Declaration Form",
+  "description": "Schema for legal statements and sworn declarations with bilingual support",
+  "version": "1.0.0",
+  "type": "object",
+  "required": ["declarantInfo", "declarationType", "statementBody", "oath"],
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "declarationId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "createdDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "lastModified": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "officerName": {
+          "type": "string"
+        },
+        "officerTitle": {
+          "type": "string"
+        },
+        "location": {
+          "type": "string"
+        },
+        "sourceLanguage": {
+          "type": "string"
+        },
+        "targetLanguage": {
+          "type": "string"
+        },
+        "caseNumber": {
+          "type": "string"
+        }
+      }
+    },
+    "declarantInfo": {
+      "type": "object",
+      "title": "Declarant Information",
+      "required": ["fullName", "dateOfBirth", "identification"],
+      "properties": {
+        "fullName": {
+          "type": "string",
+          "title": "Full Legal Name",
+          "uiConfig": {
+            "inputType": "text",
+            "voiceEnabled": true,
+            "promptHint": "Please state your full legal name."
+          }
+        },
+        "dateOfBirth": {
+          "type": "string",
+          "format": "date",
+          "title": "Date of Birth"
+        },
+        "nationality": {
+          "type": "string",
+          "title": "Nationality"
+        },
+        "currentAddress": {
+          "type": "string",
+          "title": "Current Address",
+          "uiConfig": {
+            "inputType": "text",
+            "voiceEnabled": true,
+            "promptHint": "What is your current address?"
+          }
+        },
+        "identification": {
+          "type": "object",
+          "title": "Identification",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["passport", "national_id", "refugee_id", "other"]
+            },
+            "number": {
+              "type": "string"
+            },
+            "issuingAuthority": {
+              "type": "string"
+            },
+            "expiryDate": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        },
+        "contactInfo": {
+          "type": "object",
+          "properties": {
+            "phone": { "type": "string" },
+            "email": { "type": "string", "format": "email" }
+          }
+        }
+      }
+    },
+    "declarationType": {
+      "type": "string",
+      "title": "Type of Declaration",
+      "enum": [
+        "witness_statement",
+        "sworn_affidavit",
+        "statutory_declaration",
+        "asylum_statement",
+        "incident_report",
+        "character_reference",
+        "other"
+      ],
+      "uiConfig": {
+        "inputType": "select",
+        "promptHint": "What type of declaration is this?"
+      }
+    },
+    "purpose": {
+      "type": "string",
+      "title": "Purpose of Declaration",
+      "maxLength": 500,
+      "uiConfig": {
+        "inputType": "text",
+        "voiceEnabled": true,
+        "promptHint": "What is the purpose of this declaration?"
+      }
+    },
+    "statementBody": {
+      "type": "object",
+      "title": "Statement",
+      "required": ["mainStatement"],
+      "properties": {
+        "preface": {
+          "type": "string",
+          "title": "Introduction",
+          "maxLength": 1000,
+          "default": "I, the undersigned, do hereby declare and state as follows:",
+          "uiConfig": {
+            "inputType": "text",
+            "editable": false
+          }
+        },
+        "mainStatement": {
+          "type": "string",
+          "title": "Main Statement",
+          "maxLength": 10000,
+          "uiConfig": {
+            "inputType": "longText",
+            "voiceEnabled": true,
+            "promptHint": "Please make your statement. Tell me what you want to declare.",
+            "translationPriority": "critical"
+          }
+        },
+        "numberedStatements": {
+          "type": "array",
+          "title": "Numbered Statements",
+          "description": "For structured declarations with multiple points",
+          "items": {
+            "type": "object",
+            "properties": {
+              "number": {
+                "type": "integer"
+              },
+              "statement": {
+                "type": "string",
+                "maxLength": 2000
+              },
+              "supportingEvidence": {
+                "type": "string"
+              }
+            }
+          },
+          "uiConfig": {
+            "inputType": "numberedList",
+            "voiceEnabled": true,
+            "promptHint": "State your next point.",
+            "translationPriority": "critical"
+          }
+        },
+        "chronology": {
+          "type": "array",
+          "title": "Timeline of Events",
+          "items": {
+            "type": "object",
+            "properties": {
+              "date": {
+                "type": "string"
+              },
+              "event": {
+                "type": "string",
+                "maxLength": 1000
+              },
+              "location": {
+                "type": "string"
+              },
+              "witnesses": {
+                "type": "string"
+              }
+            }
+          },
+          "uiConfig": {
+            "inputType": "timeline",
+            "voiceEnabled": true,
+            "promptHint": "What happened and when?"
+          }
+        }
+      }
+    },
+    "witnesses": {
+      "type": "array",
+      "title": "Witnesses",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "relationship": {
+            "type": "string"
+          },
+          "contact": {
+            "type": "string"
+          },
+          "canTestifyTo": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "supportingDocuments": {
+      "type": "array",
+      "title": "Supporting Documents",
+      "items": {
+        "type": "object",
+        "properties": {
+          "documentType": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "exhibitNumber": {
+            "type": "string"
+          },
+          "fileReference": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "oath": {
+      "type": "object",
+      "title": "Oath/Affirmation",
+      "required": ["oathType", "oathTaken"],
+      "properties": {
+        "oathType": {
+          "type": "string",
+          "enum": ["religious_oath", "solemn_affirmation"],
+          "title": "Type of Oath",
+          "uiConfig": {
+            "inputType": "select",
+            "promptHint": "Do you wish to swear a religious oath or make a solemn affirmation?"
+          }
+        },
+        "oathText": {
+          "type": "string",
+          "title": "Oath Text",
+          "default": "I solemnly declare that the contents of this statement are true to the best of my knowledge and belief."
+        },
+        "oathTaken": {
+          "type": "boolean",
+          "title": "Oath Administered"
+        },
+        "oathDate": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "signatures": {
+      "type": "object",
+      "title": "Signatures",
+      "properties": {
+        "declarantSignature": {
+          "type": "object",
+          "properties": {
+            "signature": {
+              "type": "string",
+              "description": "Base64 encoded signature image or text"
+            },
+            "signedDate": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "signedLocation": {
+              "type": "string"
+            }
+          }
+        },
+        "witnessSignatures": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "witnessName": { "type": "string" },
+              "signature": { "type": "string" },
+              "signedDate": { "type": "string", "format": "date-time" }
+            }
+          }
+        },
+        "officerSignature": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "title": { "type": "string" },
+            "signature": { "type": "string" },
+            "signedDate": { "type": "string", "format": "date-time" },
+            "sealNumber": { "type": "string" }
+          }
+        }
+      }
+    },
+    "amendments": {
+      "type": "array",
+      "title": "Amendments",
+      "description": "Any corrections or additions to the original statement",
+      "items": {
+        "type": "object",
+        "properties": {
+          "amendmentDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "originalText": {
+            "type": "string"
+          },
+          "correctedText": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "initialed": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "legalNotices": {
+      "type": "object",
+      "title": "Legal Notices",
+      "properties": {
+        "perjuryWarning": {
+          "type": "string",
+          "default": "I understand that making a false statement in this declaration may constitute perjury and may be punishable by law."
+        },
+        "perjuryAcknowledged": {
+          "type": "boolean",
+          "title": "Perjury Warning Acknowledged"
+        },
+        "rightsExplained": {
+          "type": "boolean",
+          "title": "Rights Explained to Declarant"
+        },
+        "interpreterUsed": {
+          "type": "boolean",
+          "title": "Interpreter Used"
+        },
+        "interpreterDetails": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "language": { "type": "string" },
+            "accreditationNumber": { "type": "string" }
+          }
+        }
+      }
+    },
+    "translations": {
+      "type": "object",
+      "title": "Translation Data",
+      "description": "Stores all translated content with confidence scores and review status",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "fieldPath": {
+            "type": "string"
+          },
+          "original": {
+            "type": "string"
+          },
+          "translated": {
+            "type": "string"
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "flaggedForReview": {
+            "type": "boolean"
+          },
+          "reviewedBy": {
+            "type": "string"
+          },
+          "reviewDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "reviewerNotes": {
+            "type": "string"
+          },
+          "certifiedAccurate": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "certification": {
+      "type": "object",
+      "title": "Translation Certification",
+      "properties": {
+        "translationCertified": {
+          "type": "boolean"
+        },
+        "certifierName": {
+          "type": "string"
+        },
+        "certifierCredentials": {
+          "type": "string"
+        },
+        "certificationDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "certificationStatement": {
+          "type": "string",
+          "default": "I certify that this translation is a true and accurate representation of the original statement to the best of my knowledge and ability."
+        }
+      }
+    }
+  }
+}

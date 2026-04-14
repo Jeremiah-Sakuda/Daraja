@@ -1,0 +1,442 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "UNHCR Refugee Status Determination Interview",
+  "description": "Schema for capturing RSD interview data with bilingual support",
+  "version": "1.0.0",
+  "type": "object",
+  "required": ["personalInfo", "flightReasons", "persecutionClaims"],
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "description": "Interview session metadata",
+      "properties": {
+        "interviewId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "interviewDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "interviewerName": {
+          "type": "string"
+        },
+        "interpreterPresent": {
+          "type": "boolean"
+        },
+        "sourceLanguage": {
+          "type": "string",
+          "description": "Language spoken by applicant"
+        },
+        "targetLanguage": {
+          "type": "string",
+          "description": "Language of interviewer"
+        },
+        "location": {
+          "type": "string"
+        }
+      }
+    },
+    "personalInfo": {
+      "type": "object",
+      "title": "Personal Information",
+      "description": "Basic biographical data",
+      "required": ["fullName", "dateOfBirth", "nationality"],
+      "properties": {
+        "fullName": {
+          "type": "string",
+          "title": "Full Name",
+          "description": "Complete legal name as per documents",
+          "minLength": 2,
+          "uiConfig": {
+            "inputType": "text",
+            "voiceEnabled": true,
+            "promptHint": "What is your full name as it appears on your documents?"
+          }
+        },
+        "aliases": {
+          "type": "array",
+          "title": "Other Names Used",
+          "items": {
+            "type": "string"
+          },
+          "uiConfig": {
+            "inputType": "multiText",
+            "voiceEnabled": true,
+            "promptHint": "Do you have any other names or nicknames?"
+          }
+        },
+        "dateOfBirth": {
+          "type": "string",
+          "format": "date",
+          "title": "Date of Birth",
+          "uiConfig": {
+            "inputType": "date",
+            "voiceEnabled": true,
+            "promptHint": "When were you born?"
+          }
+        },
+        "placeOfBirth": {
+          "type": "object",
+          "title": "Place of Birth",
+          "properties": {
+            "city": { "type": "string" },
+            "region": { "type": "string" },
+            "country": { "type": "string" }
+          },
+          "uiConfig": {
+            "inputType": "location",
+            "voiceEnabled": true,
+            "promptHint": "Where were you born? Please tell me the city, region, and country."
+          }
+        },
+        "nationality": {
+          "type": "string",
+          "title": "Nationality",
+          "uiConfig": {
+            "inputType": "select",
+            "voiceEnabled": true,
+            "promptHint": "What is your nationality?"
+          }
+        },
+        "ethnicity": {
+          "type": "string",
+          "title": "Ethnicity/Clan",
+          "uiConfig": {
+            "inputType": "text",
+            "voiceEnabled": true,
+            "promptHint": "What is your ethnic group or clan?"
+          }
+        },
+        "religion": {
+          "type": "string",
+          "title": "Religion",
+          "uiConfig": {
+            "inputType": "text",
+            "voiceEnabled": true,
+            "promptHint": "What is your religion, if any?"
+          }
+        },
+        "languages": {
+          "type": "array",
+          "title": "Languages Spoken",
+          "items": {
+            "type": "object",
+            "properties": {
+              "language": { "type": "string" },
+              "proficiency": {
+                "type": "string",
+                "enum": ["native", "fluent", "conversational", "basic"]
+              }
+            }
+          },
+          "uiConfig": {
+            "inputType": "multiSelect",
+            "voiceEnabled": true,
+            "promptHint": "What languages do you speak?"
+          }
+        },
+        "maritalStatus": {
+          "type": "string",
+          "enum": ["single", "married", "divorced", "widowed", "separated"],
+          "title": "Marital Status"
+        },
+        "occupation": {
+          "type": "string",
+          "title": "Occupation",
+          "uiConfig": {
+            "inputType": "text",
+            "voiceEnabled": true,
+            "promptHint": "What was your occupation in your home country?"
+          }
+        },
+        "education": {
+          "type": "string",
+          "title": "Education Level",
+          "enum": ["none", "primary", "secondary", "vocational", "university", "postgraduate"]
+        }
+      }
+    },
+    "familyInfo": {
+      "type": "object",
+      "title": "Family Information",
+      "properties": {
+        "spouse": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "dateOfBirth": { "type": "string", "format": "date" },
+            "nationality": { "type": "string" },
+            "currentLocation": { "type": "string" },
+            "status": {
+              "type": "string",
+              "enum": ["alive", "deceased", "unknown"]
+            }
+          }
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "dateOfBirth": { "type": "string", "format": "date" },
+              "gender": { "type": "string", "enum": ["male", "female", "other"] },
+              "currentLocation": { "type": "string" },
+              "accompanies": { "type": "boolean" }
+            }
+          }
+        },
+        "otherDependents": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "relationship": { "type": "string" },
+              "currentLocation": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "flightReasons": {
+      "type": "object",
+      "title": "Reasons for Flight",
+      "description": "Why the applicant left their country",
+      "required": ["mainReason", "departureDate"],
+      "properties": {
+        "mainReason": {
+          "type": "string",
+          "title": "Main Reason for Leaving",
+          "maxLength": 5000,
+          "uiConfig": {
+            "inputType": "longText",
+            "voiceEnabled": true,
+            "promptHint": "Please tell me the main reason why you left your country.",
+            "translationPriority": "high"
+          }
+        },
+        "specificIncidents": {
+          "type": "array",
+          "title": "Specific Incidents",
+          "items": {
+            "type": "object",
+            "properties": {
+              "date": {
+                "type": "string",
+                "format": "date"
+              },
+              "location": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string",
+                "maxLength": 3000
+              },
+              "perpetrators": {
+                "type": "string"
+              },
+              "witnesses": {
+                "type": "string"
+              }
+            }
+          },
+          "uiConfig": {
+            "inputType": "incidentForm",
+            "voiceEnabled": true,
+            "promptHint": "Can you describe any specific incidents that caused you to leave?",
+            "translationPriority": "high"
+          }
+        },
+        "departureDate": {
+          "type": "string",
+          "format": "date",
+          "title": "Date of Departure"
+        },
+        "departureCircumstances": {
+          "type": "string",
+          "title": "Circumstances of Departure",
+          "maxLength": 2000,
+          "uiConfig": {
+            "inputType": "longText",
+            "voiceEnabled": true,
+            "promptHint": "How did you leave your country? Please describe the circumstances."
+          }
+        },
+        "routeTraveled": {
+          "type": "array",
+          "title": "Route Traveled",
+          "items": {
+            "type": "object",
+            "properties": {
+              "country": { "type": "string" },
+              "entryDate": { "type": "string", "format": "date" },
+              "exitDate": { "type": "string", "format": "date" },
+              "legalStatus": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "persecutionClaims": {
+      "type": "object",
+      "title": "Persecution Claims",
+      "description": "Details of persecution or feared persecution",
+      "required": ["persecutionType", "persecutors"],
+      "properties": {
+        "persecutionType": {
+          "type": "array",
+          "title": "Type of Persecution",
+          "items": {
+            "type": "string",
+            "enum": [
+              "race",
+              "religion",
+              "nationality",
+              "political_opinion",
+              "social_group",
+              "gender",
+              "sexual_orientation",
+              "other"
+            ]
+          },
+          "uiConfig": {
+            "inputType": "multiSelect",
+            "voiceEnabled": true,
+            "promptHint": "What type of persecution have you experienced or fear?"
+          }
+        },
+        "persecutors": {
+          "type": "string",
+          "title": "Who Persecuted You",
+          "maxLength": 1000,
+          "uiConfig": {
+            "inputType": "text",
+            "voiceEnabled": true,
+            "promptHint": "Who persecuted you or who do you fear?",
+            "translationPriority": "high"
+          }
+        },
+        "stateProtection": {
+          "type": "object",
+          "title": "State Protection",
+          "properties": {
+            "soughtProtection": {
+              "type": "boolean",
+              "title": "Did you seek protection from authorities?"
+            },
+            "protectionDetails": {
+              "type": "string",
+              "title": "Protection Seeking Details",
+              "maxLength": 2000
+            },
+            "whyNotSought": {
+              "type": "string",
+              "title": "If not, why not?",
+              "maxLength": 1000
+            }
+          },
+          "uiConfig": {
+            "inputType": "conditional",
+            "voiceEnabled": true,
+            "promptHint": "Did you try to get protection from authorities in your country?"
+          }
+        },
+        "internalRelocation": {
+          "type": "object",
+          "title": "Internal Relocation",
+          "properties": {
+            "attempted": {
+              "type": "boolean",
+              "title": "Did you try to relocate within your country?"
+            },
+            "details": {
+              "type": "string",
+              "maxLength": 1000
+            },
+            "whyNotPossible": {
+              "type": "string",
+              "maxLength": 1000
+            }
+          }
+        },
+        "fearOfReturn": {
+          "type": "string",
+          "title": "Fear if Returned",
+          "maxLength": 3000,
+          "uiConfig": {
+            "inputType": "longText",
+            "voiceEnabled": true,
+            "promptHint": "What do you fear will happen if you return to your country?",
+            "translationPriority": "critical"
+          }
+        }
+      }
+    },
+    "supportingEvidence": {
+      "type": "object",
+      "title": "Supporting Documents",
+      "properties": {
+        "documents": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["passport", "id_card", "birth_certificate", "medical_report", "police_report", "letter", "photo", "other"]
+              },
+              "description": { "type": "string" },
+              "fileReference": { "type": "string" }
+            }
+          }
+        },
+        "witnesses": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "relationship": { "type": "string" },
+              "contact": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "declaration": {
+      "type": "object",
+      "title": "Declaration",
+      "properties": {
+        "truthStatement": {
+          "type": "boolean",
+          "title": "I declare that all information provided is true and complete"
+        },
+        "signature": {
+          "type": "string",
+          "title": "Signature"
+        },
+        "signatureDate": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "translations": {
+      "type": "object",
+      "title": "Translation Data",
+      "description": "Stores all translated content with confidence scores",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "original": { "type": "string" },
+          "translated": { "type": "string" },
+          "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+          "flaggedForReview": { "type": "boolean" },
+          "reviewerNotes": { "type": "string" }
+        }
+      }
+    }
+  }
+}

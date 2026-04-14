@@ -1,0 +1,217 @@
+# Field-level prompts for structured workflows
+# These prompts guide the translation model and voice input system
+
+translation_context:
+  system_prompt: |
+    You are a professional interpreter assisting with humanitarian services.
+    Translate accurately and faithfully, preserving the exact meaning.
+    For legal and medical contexts, precision is critical.
+    If uncertain about a term, translate literally and flag for review.
+
+  domain_instructions:
+    medical: |
+      Medical translation context:
+      - Preserve medical terminology precisely
+      - Do not simplify or explain medical terms
+      - Translate symptoms exactly as stated
+      - Flag any ambiguous symptom descriptions
+
+    legal: |
+      Legal translation context:
+      - Translate exactly without paraphrasing
+      - Preserve all qualifiers (maybe, approximately, I think)
+      - Do not add or remove information
+      - Flag any unclear legal terms
+
+    humanitarian: |
+      Humanitarian context:
+      - Be culturally sensitive
+      - Translate names and places phonetically if needed
+      - Preserve emotional tone
+      - Flag culturally specific terms
+
+# RSD Interview Prompts
+rsd_interview:
+  sections:
+    personalInfo:
+      intro_prompt: "I will now ask you some questions about yourself."
+      fields:
+        fullName:
+          question: "What is your full name as it appears on your documents?"
+          followup: "Do you have any other names you use?"
+          validation: "Please confirm: your name is {value}?"
+
+        dateOfBirth:
+          question: "When were you born?"
+          clarification: "If you don't know the exact date, please give your best estimate."
+
+        placeOfBirth:
+          question: "Where were you born? Please tell me the city, region, and country."
+
+        nationality:
+          question: "What is your nationality?"
+
+        ethnicity:
+          question: "What is your ethnic group or clan?"
+
+        religion:
+          question: "What is your religion, if any?"
+
+        languages:
+          question: "What languages do you speak?"
+          followup: "How well do you speak each language?"
+
+    flightReasons:
+      intro_prompt: "I will now ask you about why you left your country."
+      fields:
+        mainReason:
+          question: "Please tell me the main reason why you left your country."
+          encouragement: "Take your time. This is important."
+          followup: "Is there anything else you want to add?"
+
+        specificIncidents:
+          question: "Can you describe any specific incidents that caused you to leave?"
+          prompts:
+            - "When did this happen?"
+            - "Where did it happen?"
+            - "Who was involved?"
+            - "Were there any witnesses?"
+
+        departureCircumstances:
+          question: "How did you leave your country? Please describe the circumstances."
+
+    persecutionClaims:
+      intro_prompt: "I need to understand more about what you experienced or fear."
+      fields:
+        persecutionType:
+          question: "What type of persecution have you experienced or fear?"
+          options_explanation: "This could be because of your race, religion, nationality, political opinion, or membership in a particular social group."
+
+        persecutors:
+          question: "Who persecuted you or who do you fear?"
+          clarification: "Please be as specific as possible."
+
+        stateProtection:
+          question: "Did you try to get protection from authorities in your country?"
+          followup_yes: "What happened when you sought protection?"
+          followup_no: "Why didn't you seek protection?"
+
+        fearOfReturn:
+          question: "What do you fear will happen if you return to your country?"
+          importance: "This is a very important question. Please tell me everything."
+
+# Medical Intake Prompts
+medical_intake:
+  sections:
+    chiefComplaint:
+      intro_prompt: "I'm going to ask you about your health concern today."
+      fields:
+        mainComplaint:
+          question: "What is your main health concern today? What brought you here?"
+          encouragement: "Please describe how you're feeling."
+
+        duration:
+          question: "How long have you had this problem?"
+
+        severity:
+          question: "On a scale of 1 to 10, where 10 is the worst pain, how severe is it?"
+          scale_explanation: "1 means very mild, 10 means the worst you can imagine."
+
+        location:
+          question: "Where exactly is the problem? Can you point to the area?"
+
+        characterDescription:
+          question: "Can you describe what it feels like?"
+          examples: "Is it sharp, dull, burning, aching, throbbing?"
+
+        aggravatingFactors:
+          question: "What makes the problem worse?"
+
+        relievingFactors:
+          question: "What makes it better?"
+
+    medicalHistory:
+      intro_prompt: "Now I'll ask about your medical history."
+      fields:
+        chronicConditions:
+          question: "Do you have any ongoing health conditions?"
+          examples: "Such as diabetes, high blood pressure, asthma, HIV, or any others?"
+
+        pastSurgeries:
+          question: "Have you had any surgeries or operations?"
+          followup: "When was that and were there any complications?"
+
+    currentMedications:
+      intro_prompt: "Let's talk about any medications you're taking."
+      fields:
+        medications:
+          question: "Are you taking any medications?"
+          followup: "What is it called and how often do you take it?"
+
+        traditionalMedicines:
+          question: "Are you using any traditional or herbal medicines?"
+
+    allergies:
+      fields:
+        hasAllergies:
+          question: "Do you have any allergies?"
+
+        allergyList:
+          question: "What are you allergic to and what happens when you are exposed?"
+          importance: "This is very important for your safety."
+
+# Legal Declaration Prompts
+legal_declaration:
+  preamble: |
+    This is a formal legal declaration.
+    Everything you say will be recorded exactly as you state it.
+    Please speak clearly and truthfully.
+
+  sections:
+    statementBody:
+      intro_prompt: "Please make your statement."
+      fields:
+        mainStatement:
+          question: "Tell me what you want to declare."
+          guidance: "Start from the beginning and tell me everything relevant."
+          clarification: "Would you like me to read that back to you?"
+
+        numberedStatements:
+          question: "State your next point."
+          confirmation: "I have recorded that as point number {number}."
+
+    oath:
+      fields:
+        oathType:
+          question: "Do you wish to swear a religious oath or make a solemn affirmation?"
+          explanation: "Both are equally valid. Choose whichever you prefer."
+
+# Confidence thresholds for flagging
+confidence_thresholds:
+  critical_fields:  # Fields that require high confidence
+    - "persecutionClaims.fearOfReturn"
+    - "chiefComplaint.mainComplaint"
+    - "allergies.allergyList"
+    - "statementBody.mainStatement"
+    threshold: 0.85
+
+  standard_fields:
+    threshold: 0.75
+
+  low_priority_fields:  # Names, dates, etc.
+    threshold: 0.6
+
+# Error recovery prompts
+error_recovery:
+  low_confidence:
+    prompt: "I want to make sure I understood correctly. Did you say: {translation}?"
+    retry: "Could you please repeat that?"
+
+  technical_error:
+    prompt: "I'm sorry, there was a technical issue. Let me try again."
+
+  unclear_audio:
+    prompt: "I couldn't hear that clearly. Could you please speak a bit louder?"
+
+  language_switch:
+    prompt: "It seems you may have switched languages. Please continue in {expected_language}."

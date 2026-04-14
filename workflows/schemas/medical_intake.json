@@ -1,0 +1,560 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Medical Intake Form",
+  "description": "WHO Primary Care adapted intake form with bilingual support",
+  "version": "1.0.0",
+  "type": "object",
+  "required": ["patientInfo", "chiefComplaint", "consent"],
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "formId": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "intakeDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "facilityName": {
+          "type": "string"
+        },
+        "healthWorkerName": {
+          "type": "string"
+        },
+        "sourceLanguage": {
+          "type": "string"
+        },
+        "targetLanguage": {
+          "type": "string"
+        },
+        "urgencyLevel": {
+          "type": "string",
+          "enum": ["routine", "urgent", "emergency"]
+        }
+      }
+    },
+    "patientInfo": {
+      "type": "object",
+      "title": "Patient Information",
+      "required": ["name", "dateOfBirth", "gender"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Full Name",
+          "uiConfig": {
+            "inputType": "text",
+            "voiceEnabled": true,
+            "promptHint": "What is your name?"
+          }
+        },
+        "dateOfBirth": {
+          "type": "string",
+          "format": "date",
+          "title": "Date of Birth",
+          "uiConfig": {
+            "inputType": "date",
+            "voiceEnabled": true,
+            "promptHint": "When were you born?"
+          }
+        },
+        "age": {
+          "type": "integer",
+          "title": "Age",
+          "minimum": 0,
+          "maximum": 150
+        },
+        "gender": {
+          "type": "string",
+          "enum": ["male", "female", "other"],
+          "title": "Gender"
+        },
+        "pregnancyStatus": {
+          "type": "object",
+          "title": "Pregnancy Status",
+          "properties": {
+            "isPregnant": { "type": "boolean" },
+            "weeksPregnant": { "type": "integer" },
+            "dueDate": { "type": "string", "format": "date" }
+          },
+          "uiConfig": {
+            "inputType": "conditional",
+            "showIf": "gender === 'female'",
+            "voiceEnabled": true,
+            "promptHint": "Are you pregnant?"
+          }
+        },
+        "contactNumber": {
+          "type": "string",
+          "title": "Contact Number"
+        },
+        "address": {
+          "type": "string",
+          "title": "Current Address"
+        },
+        "emergencyContact": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "relationship": { "type": "string" },
+            "phone": { "type": "string" }
+          }
+        }
+      }
+    },
+    "chiefComplaint": {
+      "type": "object",
+      "title": "Chief Complaint",
+      "required": ["mainComplaint"],
+      "properties": {
+        "mainComplaint": {
+          "type": "string",
+          "title": "Main Complaint",
+          "maxLength": 2000,
+          "uiConfig": {
+            "inputType": "longText",
+            "voiceEnabled": true,
+            "promptHint": "What is your main health concern today? What brought you here?",
+            "translationPriority": "critical"
+          }
+        },
+        "duration": {
+          "type": "string",
+          "title": "How Long",
+          "uiConfig": {
+            "inputType": "text",
+            "voiceEnabled": true,
+            "promptHint": "How long have you had this problem?"
+          }
+        },
+        "onset": {
+          "type": "string",
+          "enum": ["sudden", "gradual"],
+          "title": "Onset"
+        },
+        "severity": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10,
+          "title": "Pain/Severity Level (1-10)",
+          "uiConfig": {
+            "inputType": "slider",
+            "voiceEnabled": true,
+            "promptHint": "On a scale of 1 to 10, how severe is your pain or discomfort?"
+          }
+        },
+        "location": {
+          "type": "string",
+          "title": "Location of Problem",
+          "uiConfig": {
+            "inputType": "bodyMap",
+            "voiceEnabled": true,
+            "promptHint": "Where exactly is the problem? Can you point to the area?"
+          }
+        },
+        "characterDescription": {
+          "type": "string",
+          "title": "Description",
+          "maxLength": 1000,
+          "uiConfig": {
+            "inputType": "text",
+            "voiceEnabled": true,
+            "promptHint": "Can you describe what it feels like? Sharp, dull, burning, aching?"
+          }
+        },
+        "aggravatingFactors": {
+          "type": "string",
+          "title": "What Makes It Worse",
+          "uiConfig": {
+            "inputType": "text",
+            "voiceEnabled": true,
+            "promptHint": "What makes the problem worse?"
+          }
+        },
+        "relievingFactors": {
+          "type": "string",
+          "title": "What Makes It Better",
+          "uiConfig": {
+            "inputType": "text",
+            "voiceEnabled": true,
+            "promptHint": "What makes it better?"
+          }
+        },
+        "associatedSymptoms": {
+          "type": "array",
+          "title": "Other Symptoms",
+          "items": {
+            "type": "string"
+          },
+          "uiConfig": {
+            "inputType": "multiText",
+            "voiceEnabled": true,
+            "promptHint": "Do you have any other symptoms?"
+          }
+        }
+      }
+    },
+    "vitalSigns": {
+      "type": "object",
+      "title": "Vital Signs",
+      "description": "Measured by healthcare worker",
+      "properties": {
+        "temperature": {
+          "type": "number",
+          "title": "Temperature (°C)",
+          "minimum": 30,
+          "maximum": 45
+        },
+        "bloodPressureSystolic": {
+          "type": "integer",
+          "title": "Blood Pressure (Systolic)",
+          "minimum": 50,
+          "maximum": 300
+        },
+        "bloodPressureDiastolic": {
+          "type": "integer",
+          "title": "Blood Pressure (Diastolic)",
+          "minimum": 30,
+          "maximum": 200
+        },
+        "pulseRate": {
+          "type": "integer",
+          "title": "Pulse Rate (bpm)",
+          "minimum": 20,
+          "maximum": 250
+        },
+        "respiratoryRate": {
+          "type": "integer",
+          "title": "Respiratory Rate",
+          "minimum": 5,
+          "maximum": 60
+        },
+        "oxygenSaturation": {
+          "type": "integer",
+          "title": "Oxygen Saturation (%)",
+          "minimum": 50,
+          "maximum": 100
+        },
+        "weight": {
+          "type": "number",
+          "title": "Weight (kg)"
+        },
+        "height": {
+          "type": "number",
+          "title": "Height (cm)"
+        },
+        "bloodGlucose": {
+          "type": "number",
+          "title": "Blood Glucose (mg/dL)"
+        }
+      }
+    },
+    "medicalHistory": {
+      "type": "object",
+      "title": "Medical History",
+      "properties": {
+        "chronicConditions": {
+          "type": "array",
+          "title": "Chronic Conditions",
+          "items": {
+            "type": "object",
+            "properties": {
+              "condition": { "type": "string" },
+              "diagnosedYear": { "type": "integer" },
+              "currentlyManaged": { "type": "boolean" }
+            }
+          },
+          "uiConfig": {
+            "inputType": "checkboxWithOther",
+            "voiceEnabled": true,
+            "promptHint": "Do you have any ongoing health conditions like diabetes, high blood pressure, asthma, or HIV?",
+            "commonOptions": [
+              "Diabetes",
+              "Hypertension",
+              "Asthma",
+              "HIV/AIDS",
+              "Tuberculosis",
+              "Heart disease",
+              "Epilepsy",
+              "Mental health condition"
+            ]
+          }
+        },
+        "pastSurgeries": {
+          "type": "array",
+          "title": "Past Surgeries",
+          "items": {
+            "type": "object",
+            "properties": {
+              "procedure": { "type": "string" },
+              "year": { "type": "integer" },
+              "complications": { "type": "string" }
+            }
+          },
+          "uiConfig": {
+            "inputType": "list",
+            "voiceEnabled": true,
+            "promptHint": "Have you had any surgeries or operations?"
+          }
+        },
+        "hospitalizations": {
+          "type": "array",
+          "title": "Recent Hospitalizations",
+          "items": {
+            "type": "object",
+            "properties": {
+              "reason": { "type": "string" },
+              "when": { "type": "string" },
+              "duration": { "type": "string" }
+            }
+          }
+        },
+        "familyHistory": {
+          "type": "string",
+          "title": "Family Health History",
+          "maxLength": 1000,
+          "uiConfig": {
+            "inputType": "text",
+            "voiceEnabled": true,
+            "promptHint": "Does anyone in your family have any serious health conditions?"
+          }
+        }
+      }
+    },
+    "currentMedications": {
+      "type": "object",
+      "title": "Current Medications",
+      "properties": {
+        "medications": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "title": "Medication Name"
+              },
+              "dose": {
+                "type": "string",
+                "title": "Dose"
+              },
+              "frequency": {
+                "type": "string",
+                "title": "How Often"
+              },
+              "reason": {
+                "type": "string",
+                "title": "For What Condition"
+              }
+            }
+          },
+          "uiConfig": {
+            "inputType": "medicationList",
+            "voiceEnabled": true,
+            "promptHint": "Are you taking any medications? What are they and how often?",
+            "translationPriority": "high"
+          }
+        },
+        "traditionalMedicines": {
+          "type": "string",
+          "title": "Traditional/Herbal Medicines",
+          "uiConfig": {
+            "inputType": "text",
+            "voiceEnabled": true,
+            "promptHint": "Are you using any traditional or herbal medicines?"
+          }
+        },
+        "adherence": {
+          "type": "string",
+          "enum": ["always", "usually", "sometimes", "rarely"],
+          "title": "Medication Adherence"
+        }
+      }
+    },
+    "allergies": {
+      "type": "object",
+      "title": "Allergies",
+      "properties": {
+        "hasAllergies": {
+          "type": "boolean",
+          "title": "Do you have any allergies?"
+        },
+        "allergyList": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "allergen": { "type": "string" },
+              "reaction": { "type": "string" },
+              "severity": {
+                "type": "string",
+                "enum": ["mild", "moderate", "severe", "life-threatening"]
+              }
+            }
+          },
+          "uiConfig": {
+            "inputType": "allergyForm",
+            "voiceEnabled": true,
+            "promptHint": "What are you allergic to and what happens when you are exposed?",
+            "translationPriority": "critical"
+          }
+        }
+      }
+    },
+    "socialHistory": {
+      "type": "object",
+      "title": "Social History",
+      "properties": {
+        "smokingStatus": {
+          "type": "string",
+          "enum": ["never", "former", "current"],
+          "title": "Smoking"
+        },
+        "alcoholUse": {
+          "type": "string",
+          "enum": ["none", "occasional", "moderate", "heavy"],
+          "title": "Alcohol Use"
+        },
+        "substanceUse": {
+          "type": "boolean",
+          "title": "Other Substance Use"
+        },
+        "livingConditions": {
+          "type": "string",
+          "title": "Living Conditions",
+          "uiConfig": {
+            "inputType": "text",
+            "voiceEnabled": true,
+            "promptHint": "Can you describe your living situation?"
+          }
+        },
+        "occupation": {
+          "type": "string",
+          "title": "Occupation"
+        },
+        "recentTravel": {
+          "type": "string",
+          "title": "Recent Travel"
+        }
+      }
+    },
+    "immunizations": {
+      "type": "object",
+      "title": "Immunization Status",
+      "properties": {
+        "immunizationRecordAvailable": {
+          "type": "boolean"
+        },
+        "knownVaccinations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "vaccine": { "type": "string" },
+              "date": { "type": "string" },
+              "verified": { "type": "boolean" }
+            }
+          }
+        },
+        "childImmunizationsUpToDate": {
+          "type": "boolean",
+          "title": "Child Immunizations Up-to-Date"
+        }
+      }
+    },
+    "screeningQuestions": {
+      "type": "object",
+      "title": "Screening Questions",
+      "description": "Standard screening for common conditions",
+      "properties": {
+        "tbScreening": {
+          "type": "object",
+          "title": "TB Screening",
+          "properties": {
+            "coughMoreThan2Weeks": { "type": "boolean" },
+            "nightSweats": { "type": "boolean" },
+            "weightLoss": { "type": "boolean" },
+            "fever": { "type": "boolean" },
+            "tbContact": { "type": "boolean" }
+          }
+        },
+        "malariaScreening": {
+          "type": "object",
+          "title": "Malaria Screening",
+          "properties": {
+            "fever": { "type": "boolean" },
+            "chills": { "type": "boolean" },
+            "headache": { "type": "boolean" },
+            "malariaEndemic": { "type": "boolean" }
+          }
+        },
+        "mentalHealthScreening": {
+          "type": "object",
+          "title": "Mental Health Screening",
+          "properties": {
+            "feelingDown": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 3,
+              "title": "Feeling down, depressed, or hopeless"
+            },
+            "littleInterest": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 3,
+              "title": "Little interest or pleasure in doing things"
+            },
+            "sleepProblems": { "type": "boolean" },
+            "anxietySymptoms": { "type": "boolean" }
+          },
+          "uiConfig": {
+            "inputType": "mentalHealthForm",
+            "voiceEnabled": true,
+            "promptHint": "Over the past two weeks, have you been feeling down, depressed, or hopeless?",
+            "translationPriority": "high"
+          }
+        }
+      }
+    },
+    "consent": {
+      "type": "object",
+      "title": "Consent",
+      "required": ["treatmentConsent"],
+      "properties": {
+        "treatmentConsent": {
+          "type": "boolean",
+          "title": "Consent to Treatment"
+        },
+        "informationSharingConsent": {
+          "type": "boolean",
+          "title": "Consent to Share Information"
+        },
+        "consentDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "consentGivenBy": {
+          "type": "string",
+          "enum": ["patient", "guardian", "other"]
+        },
+        "guardianName": {
+          "type": "string"
+        }
+      }
+    },
+    "translations": {
+      "type": "object",
+      "title": "Translation Data",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "original": { "type": "string" },
+          "translated": { "type": "string" },
+          "confidence": { "type": "number" },
+          "flaggedForReview": { "type": "boolean" }
+        }
+      }
+    }
+  }
+}
