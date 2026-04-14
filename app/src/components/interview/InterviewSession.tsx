@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { FormCard } from './FormCard';
 import { ProgressIndicator } from './ProgressIndicator';
 import { VoiceInput } from '../input/VoiceInput';
@@ -9,7 +10,15 @@ import type { TranslationResponse } from '../../types/translation';
 import { ArrowLeft, ArrowRight, CheckCircle, FileText } from 'lucide-react';
 
 export function InterviewSession() {
-  const [workflowType] = useState<WorkflowType>('rsd_interview');
+  const { workflowType: workflowParam } = useParams<{ workflowType: string }>();
+  const navigate = useNavigate();
+
+  // Validate and default workflow type
+  const workflowType: WorkflowType =
+    workflowParam && workflowParam in WORKFLOWS
+      ? (workflowParam as WorkflowType)
+      : 'rsd_interview';
+
   const workflow = WORKFLOWS[workflowType];
 
   const [session, setSession] = useState<WorkflowSession>(() => ({
@@ -188,9 +197,9 @@ export function InterviewSession() {
               <FileText className="w-5 h-5 mr-2" />
               Export PDF
             </button>
-            <a href="/" className="btn-secondary w-full">
+            <button onClick={() => navigate('/interview')} className="btn-secondary w-full">
               Start New Session
-            </a>
+            </button>
           </div>
         </div>
       </div>

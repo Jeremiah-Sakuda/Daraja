@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 import { Header } from './components/layout/Header';
 import { Navigation } from './components/layout/Navigation';
 import { InterviewSession } from './components/interview/InterviewSession';
+import { WorkflowSelection } from './pages/WorkflowSelection';
 import { QuickTranslate } from './pages/QuickTranslate';
 import { History } from './pages/History';
 import { useOfflineSync } from './hooks/useOfflineSync';
@@ -124,7 +125,8 @@ function App() {
       <main className="flex-1 flex flex-col">
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/interview" element={<InterviewSession />} />
+          <Route path="/interview" element={<WorkflowSelection />} />
+          <Route path="/interview/:workflowType" element={<InterviewSession />} />
           <Route path="/quick-translate" element={<QuickTranslate />} />
           <Route path="/history" element={<History />} />
           <Route path="/settings" element={<SettingsPage />} />
