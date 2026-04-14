@@ -15,7 +15,6 @@ export function VoiceInput({
   const {
     isRecording,
     duration,
-    audioBlob,
     audioUrl,
     error,
     isSupported,

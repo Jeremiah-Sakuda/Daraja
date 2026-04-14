@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import type { TranslationRequest, TranslationResponse, LanguagePair } from '../types/translation';
-import { getConfidenceLevel, LANGUAGE_PAIRS } from '../types/translation';
+import { LANGUAGE_PAIRS } from '../types/translation';
 import { createMockConfidenceScore } from '../types/confidence';
 
 interface OllamaState {

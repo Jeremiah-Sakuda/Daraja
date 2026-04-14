@@ -1,4 +1,4 @@
-import { Wifi, WifiOff, Cloud, CloudOff } from 'lucide-react';
+import { Wifi, WifiOff, Cloud } from 'lucide-react';
 
 interface HeaderProps {
   isOnline: boolean;

@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { FileText, Download, Loader2 } from 'lucide-react';
+import { Download, Loader2 } from 'lucide-react';
 import type { WorkflowSession } from '../../types/workflow';
 
 interface PDFExportProps {

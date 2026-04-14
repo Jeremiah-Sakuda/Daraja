@@ -7,7 +7,7 @@
  */
 
 import type { WorkflowSession } from './workflow';
-import type { TranslationResponse } from './translation';
+import type { TranslationResponse } from '../types/translation';
 
 // Database configuration
 const DB_NAME = 'daraja-offline';
@@ -353,7 +353,7 @@ export class SyncService {
       sourceLang,
       targetLang,
       domain,
-      confidence: response.confidence?.overall || 0,
+      confidence: response.confidence || 0,
       timestamp: new Date().toISOString(),
       accessCount: 1,
     };

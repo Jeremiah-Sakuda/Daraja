@@ -318,9 +318,9 @@ export function prepareExportData(
         fieldLabel: field.label,
         sourceText: response?.sourceText || '',
         translatedText: response?.translatedText || '',
-        confidence: response?.confidence?.overall || 0,
-        confidenceLevel: response?.confidence?.level || 'low',
-        flagged: response?.confidence?.level === 'low',
+        confidence: response?.confidence || 0,
+        confidenceLevel: response?.confidenceLevel || 'low',
+        flagged: response?.confidenceLevel === 'low',
       });
     }
   }

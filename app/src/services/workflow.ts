@@ -5,8 +5,7 @@
  * Supports RSD interviews, medical intake, and legal declarations.
  */
 
-import type { TranslationResponse } from './translation';
-import type { ConfidenceScore } from './confidence';
+import type { TranslationResponse, ConfidenceLevel } from '../types/translation';
 
 // Workflow Schema Types
 export interface WorkflowSchema {
@@ -84,7 +83,8 @@ export interface FieldResponse {
   sectionId: string;
   sourceText: string;
   translatedText?: string;
-  confidence?: ConfidenceScore;
+  confidence?: number;
+  confidenceLevel?: ConfidenceLevel;
   inputMethod: 'voice' | 'text' | 'document' | 'select';
   timestamp: string;
   audioBlob?: Blob;
@@ -108,21 +108,55 @@ export class WorkflowManager {
    * Load workflow schemas
    */
   async loadSchemas(): Promise<void> {
-    // In production, these would be fetched from files or API
-    const schemaModules = [
-      () => import('../../workflows/schemas/rsd_interview.json'),
-      // () => import('../../workflows/schemas/medical_intake.json'),
-      // () => import('../../workflows/schemas/legal_declaration.json'),
+    // Load built-in workflow schemas
+    // In production, these could be fetched from an API
+    const builtInSchemas: WorkflowSchema[] = [
+      {
+        id: 'rsd-interview',
+        version: '1.0.0',
+        name: 'RSD Interview',
+        description: 'UNHCR Refugee Status Determination Interview',
+        organization: 'UNHCR',
+        languagePairs: ['so-sw', 'ti-ar', 'prs-tr'],
+        sections: [
+          {
+            id: 'personal-info',
+            title: 'Personal Information',
+            fields: [
+              { id: 'full-name', type: 'voice', label: 'Full Name', required: true, translatable: true, domain: 'general' },
+              { id: 'date-of-birth', type: 'date', label: 'Date of Birth', required: true, translatable: false },
+              { id: 'nationality', type: 'text', label: 'Nationality', required: true, translatable: true, domain: 'legal' },
+            ],
+          },
+          {
+            id: 'flight-reasons',
+            title: 'Reasons for Leaving',
+            fields: [
+              { id: 'departure-date', type: 'date', label: 'When did you leave your country?', required: true, translatable: false },
+              { id: 'reasons', type: 'voice', label: 'Why did you leave your country?', required: true, translatable: true, domain: 'legal' },
+              { id: 'return-fear', type: 'voice', label: 'What do you fear if you return?', required: true, translatable: true, domain: 'legal' },
+            ],
+          },
+          {
+            id: 'current-situation',
+            title: 'Current Situation',
+            fields: [
+              { id: 'arrival-date', type: 'date', label: 'When did you arrive here?', required: true, translatable: false },
+              { id: 'family-members', type: 'voice', label: 'Who traveled with you?', required: false, translatable: true, domain: 'general' },
+              { id: 'additional-info', type: 'voice', label: 'Anything else to add?', required: false, translatable: true, domain: 'general' },
+            ],
+          },
+        ],
+        metadata: {
+          estimatedDuration: '30-45 minutes',
+          requiresSignature: true,
+          privacyLevel: 'highly_sensitive',
+        },
+      },
     ];
 
-    for (const loadSchema of schemaModules) {
-      try {
-        const module = await loadSchema();
-        const schema = module.default as WorkflowSchema;
-        this.schemas.set(schema.id, schema);
-      } catch (error) {
-        console.warn('Failed to load workflow schema:', error);
-      }
+    for (const schema of builtInSchemas) {
+      this.schemas.set(schema.id, schema);
     }
   }
 
@@ -232,6 +266,7 @@ export class WorkflowManager {
       sourceText,
       translatedText: translation?.translatedText,
       confidence: translation?.confidence,
+      confidenceLevel: translation?.confidenceLevel,
       inputMethod: 'text', // Default, can be overridden
       timestamp: new Date().toISOString(),
     };
@@ -248,7 +283,7 @@ export class WorkflowManager {
     }
 
     // Check for low confidence flags
-    if (translation?.confidence?.level === 'low') {
+    if (translation?.confidenceLevel === 'low') {
       this.addFlag(fieldId, 'low_confidence', 'Translation confidence is low');
     }
 
@@ -513,10 +548,10 @@ export class WorkflowManager {
           field: field.label,
           source: response?.sourceText || '',
           translation: response?.translatedText || '',
-          confidence: response?.confidence
-            ? `${Math.round(response.confidence.overall * 100)}%`
+          confidence: response?.confidence !== undefined
+            ? `${Math.round(response.confidence * 100)}%`
             : 'N/A',
-          flagged: response?.confidence?.level === 'low',
+          flagged: response?.confidenceLevel === 'low',
         });
       }
     }

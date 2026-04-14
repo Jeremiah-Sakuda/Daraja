@@ -21,7 +21,7 @@ export function isRecordingSupported(): boolean {
   return !!(
     typeof navigator !== 'undefined' &&
     navigator.mediaDevices &&
-    navigator.mediaDevices.getUserMedia &&
+    typeof navigator.mediaDevices.getUserMedia === 'function' &&
     typeof MediaRecorder !== 'undefined'
   );
 }
@@ -219,7 +219,7 @@ export class AudioLevelAnalyzer {
   getLevel(): number {
     if (!this.analyser || !this.dataArray) return 0;
 
-    this.analyser.getByteFrequencyData(this.dataArray);
+    this.analyser.getByteFrequencyData(this.dataArray as Uint8Array<ArrayBuffer>);
 
     // Calculate RMS
     let sum = 0;
@@ -238,7 +238,7 @@ export class AudioLevelAnalyzer {
   getFrequencyData(): Uint8Array | null {
     if (!this.analyser || !this.dataArray) return null;
 
-    this.analyser.getByteFrequencyData(this.dataArray);
+    this.analyser.getByteFrequencyData(this.dataArray as Uint8Array<ArrayBuffer>);
     return this.dataArray;
   }
 

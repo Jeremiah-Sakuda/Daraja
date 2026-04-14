@@ -148,11 +148,12 @@ export function useOfflineSync() {
         }
       }
 
+      const newPendingCount = await db.count(SYNC_QUEUE_STORE);
       setState((s) => ({
         ...s,
         isSyncing: false,
         lastSyncAt: Date.now(),
-        pendingCount: await db.count(SYNC_QUEUE_STORE),
+        pendingCount: newPendingCount,
       }));
     } catch (error) {
       console.error('Sync failed:', error);
