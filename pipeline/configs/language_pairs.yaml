@@ -1,0 +1,110 @@
+# Language Pair Configurations for Daraja Pipeline
+# Each pair includes source/target languages, available corpora, and domain priorities
+
+language_pairs:
+  somali_swahili:
+    source:
+      code: so
+      name: Somali
+      script: Latin
+    target:
+      code: sw
+      name: Swahili
+      script: Latin
+    priority: 1  # First target pair
+    corpora:
+      - name: opus
+        subsets:
+          - JW300
+          - WikiMatrix
+          - CCAligned
+      - name: flores200
+        split: devtest
+      - name: nllb
+        version: "3.3"
+    domains:
+      - humanitarian
+      - medical
+      - legal
+    estimated_seed_pairs: 15000
+    notes: |
+      Primary humanitarian corridor: East Africa refugee populations.
+      Direct translation rare in commercial tools.
+
+  tigrinya_arabic:
+    source:
+      code: ti
+      name: Tigrinya
+      script: Ethiopic
+    target:
+      code: ar
+      name: Arabic
+      script: Arabic
+    priority: 2
+    corpora:
+      - name: opus
+        subsets:
+          - JW300
+          - QED
+      - name: flores200
+        split: devtest
+    domains:
+      - humanitarian
+      - legal
+    estimated_seed_pairs: 8000
+    notes: |
+      Eritrean refugee corridor to Middle East/North Africa.
+      Script conversion may be needed for some sources.
+
+  dari_turkish:
+    source:
+      code: prs  # Dari (ISO 639-3)
+      name: Dari
+      script: Arabic
+    target:
+      code: tr
+      name: Turkish
+      script: Latin
+    priority: 3
+    corpora:
+      - name: opus
+        subsets:
+          - JW300
+          - OpenSubtitles
+      - name: flores200
+        split: devtest
+    domains:
+      - humanitarian
+      - medical
+    estimated_seed_pairs: 10000
+    notes: |
+      Afghan refugee corridor to Turkey.
+      Dari shares vocabulary with Farsi but distinct dialect.
+
+# Corpus source URLs and access methods
+corpus_sources:
+  opus:
+    base_url: "https://opus.nlpl.eu/download.php"
+    format: moses  # parallel txt files
+
+  flores200:
+    huggingface: "facebook/flores"
+    format: jsonl
+
+  jw300:
+    opus_name: "JW300"
+    description: "Jehovah's Witnesses publications, aligned sentences"
+
+  nllb:
+    huggingface: "allenai/nllb"
+    description: "No Language Left Behind parallel data"
+
+# Quality thresholds for corpus filtering
+quality_thresholds:
+  min_sentence_length: 5  # characters
+  max_sentence_length: 500
+  min_word_count: 2
+  max_word_count: 100
+  length_ratio_max: 3.0  # source/target length ratio
+  dedup_exact: true
+  dedup_fuzzy_threshold: 0.95

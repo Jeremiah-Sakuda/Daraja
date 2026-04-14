@@ -1,0 +1,131 @@
+# Unsloth QLoRA Training Configuration for Daraja
+# Optimized for Kaggle T4/P100 GPUs
+
+model:
+  base: "unsloth/gemma-2-9b-it-bnb-4bit"  # 4-bit quantized Gemma
+  max_seq_length: 2048
+  dtype: null  # Auto-detect
+  load_in_4bit: true
+
+lora:
+  r: 16  # LoRA rank
+  lora_alpha: 16
+  lora_dropout: 0.0
+  target_modules:
+    - q_proj
+    - k_proj
+    - v_proj
+    - o_proj
+    - gate_proj
+    - up_proj
+    - down_proj
+  bias: "none"
+  use_gradient_checkpointing: "unsloth"  # Memory optimization
+  random_state: 42
+  use_rslora: false
+  loftq_config: null
+
+training:
+  per_device_train_batch_size: 2
+  gradient_accumulation_steps: 4
+  warmup_steps: 100
+  num_train_epochs: 3
+  learning_rate: 2.0e-4
+  logging_steps: 10
+  optim: "adamw_8bit"
+  weight_decay: 0.01
+  lr_scheduler_type: "linear"
+  seed: 42
+  output_dir: "./outputs"
+  save_strategy: "steps"
+  save_steps: 500
+  save_total_limit: 3
+
+# Data formatting
+data:
+  # Domain tags prepended to source text
+  domain_tags:
+    medical: "[MEDICAL]"
+    legal: "[LEGAL]"
+    humanitarian: "[HUMANITARIAN]"
+    general: "[GENERAL]"
+
+  # Chat template format
+  prompt_template: |
+    <start_of_turn>user
+    Translate the following {source_lang} text to {target_lang}:
+    {domain_tag} {source_text}<end_of_turn>
+    <start_of_turn>model
+    {target_text}<end_of_turn>
+
+  # Train/validation split
+  validation_split: 0.05
+  shuffle: true
+  max_samples: null  # Set to limit for debugging
+
+# Synthetic data generation (for notebook 02)
+synthetic:
+  teacher_model: "google/gemma-2-27b-it"  # Teacher for distillation
+  temperature: 0.7
+  top_p: 0.9
+  max_new_tokens: 256
+
+  # Back-translation settings
+  back_translation:
+    enabled: true
+    similarity_threshold: 0.75  # LaBSE cosine similarity
+    max_attempts: 3
+
+  # Paraphrase augmentation
+  paraphrase:
+    enabled: true
+    num_paraphrases: 2
+    diversity_penalty: 0.5
+
+# Evaluation settings
+evaluation:
+  metrics:
+    - bleu
+    - chrf
+    - comet  # If COMET available
+
+  # Test sets
+  test_sets:
+    - flores200_devtest
+    - held_out_seed
+    - domain_specific
+
+  # Baseline comparisons
+  baselines:
+    - name: "gemma-e4b-zero-shot"
+      model: "unsloth/gemma-2-9b-it-bnb-4bit"
+    - name: "nllb-200"
+      model: "facebook/nllb-200-distilled-600M"
+
+# Confidence scoring
+confidence:
+  token_entropy_weight: 0.3
+  back_translation_weight: 0.5
+  domain_match_weight: 0.2
+
+  thresholds:
+    high: 0.8     # Show directly
+    medium: 0.5   # Show with warning
+    # Below 0.5: Flag for human review
+
+# Export settings
+export:
+  quantization:
+    - "q4_k_m"  # 4-bit quantization for Ollama
+    - "q8_0"    # 8-bit for higher quality
+
+  ollama:
+    template: |
+      FROM ./model.gguf
+      TEMPLATE """<start_of_turn>user
+      {{ .Prompt }}<end_of_turn>
+      <start_of_turn>model
+      """
+      PARAMETER temperature 0.3
+      PARAMETER top_p 0.9
+      PARAMETER stop "<end_of_turn>"
