@@ -2,6 +2,8 @@ import { Routes, Route } from 'react-router-dom';
 import { Header } from './components/layout/Header';
 import { Navigation } from './components/layout/Navigation';
 import { InterviewSession } from './components/interview/InterviewSession';
+import { QuickTranslate } from './pages/QuickTranslate';
+import { History } from './pages/History';
 import { useOfflineSync } from './hooks/useOfflineSync';
 
 // Home page component
@@ -123,6 +125,8 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/interview" element={<InterviewSession />} />
+          <Route path="/quick-translate" element={<QuickTranslate />} />
+          <Route path="/history" element={<History />} />
           <Route path="/settings" element={<SettingsPage />} />
         </Routes>
       </main>
