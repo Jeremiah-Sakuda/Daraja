@@ -1,24 +1,44 @@
-import { useState, useCallback, useRef } from 'react';
-import { Camera, Upload, X, RotateCcw, Check, Loader2 } from 'lucide-react';
+import { useState, useCallback, useRef, useEffect } from 'react';
+import { Camera, Upload, X, RotateCcw, Check, Loader2, AlertCircle } from 'lucide-react';
+import { useDocumentOcr } from '../../hooks/useDocumentOcr';
 
 interface DocumentCaptureProps {
   onCapture: (imageData: string) => void;
-  onExtractedText?: (text: string) => void;
+  onExtractedText?: (text: string, confidence?: number) => void;
+  onTranslatedText?: (text: string, confidence?: number) => void;
+  targetLanguage?: string;
   isProcessing?: boolean;
 }
 
 export function DocumentCapture({
   onCapture,
   onExtractedText,
+  onTranslatedText,
+  targetLanguage = 'en',
   isProcessing = false,
 }: DocumentCaptureProps) {
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [isCapturing, setIsCapturing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [ocrAvailable, setOcrAvailable] = useState<boolean | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
+
+  const {
+    isProcessing: isOcrProcessing,
+    result: ocrResult,
+    error: ocrError,
+    extractText,
+    extractAndTranslate,
+    checkAvailability,
+  } = useDocumentOcr();
+
+  // Check OCR availability on mount
+  useEffect(() => {
+    checkAvailability().then(setOcrAvailable);
+  }, [checkAvailability]);
 
   // Start camera capture
   const startCamera = useCallback(async () => {
@@ -105,14 +125,29 @@ export function DocumentCapture({
     }
   }, []);
 
-  // Simulate text extraction (in production, this would use OCR or vision model)
-  const extractText = useCallback(async () => {
-    if (!capturedImage || !onExtractedText) return;
+  // Extract text using OCR service
+  const handleExtractText = useCallback(async () => {
+    if (!capturedImage) return;
 
-    // Simulated extraction - in production this would call the vision model
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    onExtractedText('[Extracted text would appear here in production]');
-  }, [capturedImage, onExtractedText]);
+    try {
+      if (onTranslatedText && targetLanguage) {
+        // Extract and translate
+        const result = await extractAndTranslate(capturedImage, targetLanguage);
+        if (result) {
+          onExtractedText?.(result.text, result.confidence);
+          onTranslatedText(result.translatedText, result.translationConfidence);
+        }
+      } else if (onExtractedText) {
+        // Extract only
+        const result = await extractText(capturedImage);
+        if (result) {
+          onExtractedText(result.text, result.confidence);
+        }
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Text extraction failed');
+    }
+  }, [capturedImage, onExtractedText, onTranslatedText, targetLanguage, extractText, extractAndTranslate]);
 
   return (
     <div className="space-y-4">
@@ -163,22 +198,28 @@ export function DocumentCapture({
           </div>
 
           {/* Extract text button */}
-          {onExtractedText && (
-            <div className="absolute bottom-4 left-4 right-4">
+          {(onExtractedText || onTranslatedText) && (
+            <div className="absolute bottom-4 left-4 right-4 space-y-2">
+              {ocrAvailable === false && (
+                <div className="bg-amber-100 text-amber-800 text-xs px-3 py-2 rounded-lg flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                  <span>Vision model not available. Ensure Ollama is running with LLaVA.</span>
+                </div>
+              )}
               <button
-                onClick={extractText}
-                disabled={isProcessing}
+                onClick={handleExtractText}
+                disabled={isProcessing || isOcrProcessing || ocrAvailable === false}
                 className="btn-primary w-full"
               >
-                {isProcessing ? (
+                {isProcessing || isOcrProcessing ? (
                   <>
                     <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                    Extracting text...
+                    {onTranslatedText ? 'Extracting & translating...' : 'Extracting text...'}
                   </>
                 ) : (
                   <>
                     <Check className="w-5 h-5 mr-2" />
-                    Extract Text
+                    {onTranslatedText ? 'Extract & Translate' : 'Extract Text'}
                   </>
                 )}
               </button>
@@ -225,8 +266,26 @@ export function DocumentCapture({
       )}
 
       {/* Error message */}
-      {error && (
-        <p className="text-sm text-alert-500 text-center">{error}</p>
+      {(error || ocrError) && (
+        <p className="text-sm text-alert-500 text-center">{error || ocrError}</p>
+      )}
+
+      {/* OCR Result preview */}
+      {ocrResult && 'text' in ocrResult && (
+        <div className="bg-daraja-50 rounded-xl p-4 space-y-2">
+          <div className="flex items-center justify-between text-xs text-daraja-500">
+            <span>Detected: {ocrResult.documentType || 'Document'}</span>
+            <span>Confidence: {Math.round(ocrResult.confidence * 100)}%</span>
+          </div>
+          <p className="text-sm text-daraja-700 line-clamp-3">{ocrResult.text}</p>
+          {'translatedText' in ocrResult && (
+            <div className="border-t border-daraja-200 pt-2 mt-2">
+              <p className="text-sm text-daraja-600 line-clamp-3">
+                {ocrResult.translatedText}
+              </p>
+            </div>
+          )}
+        </div>
       )}
 
       {/* Help text */}
