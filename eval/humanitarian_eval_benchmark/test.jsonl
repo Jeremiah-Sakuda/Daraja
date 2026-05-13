@@ -1,0 +1,30 @@
+{"id": "med_01", "domain": "medical", "somali": "Ilmahaygu wuu xummadaa", "references": ["Mtoto wangu ana homa", "Mwanangu ana homa", "Mtoto wangu anaumwa homa"], "english": "My child has a fever"}
+{"id": "med_02", "domain": "medical", "somali": "Xaggee baa ku xanuunaya?", "references": ["Unauma wapi?", "Inauma wapi?", "Ni wapi unahisi maumivu?"], "english": "Where does it hurt?"}
+{"id": "med_03", "domain": "medical", "somali": "Daawadan qaado laba jeer maalintii", "references": ["Chukua dawa hii mara mbili kwa siku", "Tumia dawa hii mara mbili kila siku"], "english": "Take this medicine twice daily"}
+{"id": "med_04", "domain": "medical", "somali": "Waxaan u baahanahay dhakhtar", "references": ["Ninahitaji daktari", "Nahitaji kuona daktari"], "english": "I need a doctor"}
+{"id": "med_05", "domain": "medical", "somali": "Caloosha ayaa i xanuunaysa", "references": ["Tumbo langu linauma", "Nina maumivu ya tumbo"], "english": "My stomach hurts"}
+{"id": "med_06", "domain": "medical", "somali": "Uurka ma leedahay?", "references": ["Je, una mimba?", "Je, wewe ni mjamzito?"], "english": "Are you pregnant?"}
+{"id": "med_07", "domain": "medical", "somali": "Daawadayda waan dhammeystay", "references": ["Dawa yangu imeisha", "Nimemaliza dawa yangu"], "english": "I ran out of my medication"}
+{"id": "med_08", "domain": "medical", "somali": "Ma jiraa qof af Soomaali ku hadla?", "references": ["Je, kuna mtu anayezungumza Kisomali?", "Kuna mtu wa Kisomali hapa?"], "english": "Is there someone who speaks Somali?"}
+{"id": "med_09", "domain": "medical", "somali": "Dhibaato neefsasho ayaan qabaa", "references": ["Nina shida ya kupumua", "Ninapata shida kupumua"], "english": "I have trouble breathing"}
+{"id": "med_10", "domain": "medical", "somali": "Tallaalka COVID ma heshay?", "references": ["Je, umepata chanjo ya COVID?", "Umechanjwa COVID?"], "english": "Have you received the COVID vaccine?"}
+{"id": "legal_01", "domain": "legal", "somali": "Waxaan u baahanahay qareen", "references": ["Ninahitaji wakili", "Nahitaji msaada wa kisheria"], "english": "I need a lawyer"}
+{"id": "legal_02", "domain": "legal", "somali": "Goorma ayaa dacwadaydu tahay?", "references": ["Kesi yangu ni lini?", "Tarehe ya kesi yangu ni ipi?"], "english": "When is my court date?"}
+{"id": "legal_03", "domain": "legal", "somali": "Waxaan doonayaa in aan codsado magangelyo", "references": ["Nataka kuomba hifadhi", "Ninataka kuomba ukimbizi"], "english": "I want to apply for asylum"}
+{"id": "legal_04", "domain": "legal", "somali": "Xuquuqdayda waa maxay?", "references": ["Haki zangu ni zipi?", "Nina haki gani?"], "english": "What are my rights?"}
+{"id": "legal_05", "domain": "legal", "somali": "Ma haysto warqad aqoonsi", "references": ["Sina kitambulisho", "Sina hati ya utambulisho"], "english": "I don't have identification documents"}
+{"id": "legal_06", "domain": "legal", "somali": "Dalka goorma ayaan kasoo galay?", "references": ["Uliingia nchi lini?", "Ulifika lini katika nchi hii?"], "english": "When did you enter the country?"}
+{"id": "legal_07", "domain": "legal", "somali": "Qoyskaygii waa dalka kale", "references": ["Familia yangu iko nchi nyingine", "Jamaa zangu wako nchi nyingine"], "english": "My family is in another country"}
+{"id": "legal_08", "domain": "legal", "somali": "Ma caddeyn karaa in aan khatar ku jiro", "references": ["Ninaweza kuthibitisha kuwa niko hatarini", "Naweza kuonyesha niko katika hatari"], "english": "I can prove I am in danger"}
+{"id": "legal_09", "domain": "legal", "somali": "Warbixin qoraal ah ayaan u baahanahay", "references": ["Ninahitaji taarifa iliyoandikwa", "Nahitaji maelezo yaliyoandikwa"], "english": "I need a written statement"}
+{"id": "legal_10", "domain": "legal", "somali": "Gargaar bilaash ah ma jiraa?", "references": ["Je, kuna msaada wa bure?", "Kuna huduma za bure?"], "english": "Is there free help available?"}
+{"id": "edu_01", "domain": "educational", "somali": "Cunugayga waxaan rabaa inaan iskuul ka qoro", "references": ["Nataka kuandikisha mtoto wangu shuleni", "Ninataka kumwandikisha mwanangu shuleni"], "english": "I want to enroll my child in school"}
+{"id": "edu_02", "domain": "educational", "somali": "Fasalkee ayuu ku jiraa?", "references": ["Yuko darasa gani?", "Yuko gredi gani?"], "english": "What grade is he/she in?"}
+{"id": "edu_03", "domain": "educational", "somali": "IEP waa maxay?", "references": ["IEP ni nini?", "Maana ya IEP ni nini?"], "english": "What is an IEP?"}
+{"id": "edu_04", "domain": "educational", "somali": "Waraaqaha qorista waa kuwee?", "references": ["Nyaraka za usajili ni zipi?", "Hati zipi zinahitajika kwa usajili?"], "english": "What documents are needed for registration?"}
+{"id": "edu_05", "domain": "educational", "somali": "Cunugayga uma hadlin Ingiriisi", "references": ["Mtoto wangu hazungumzi Kiingereza", "Mwanangu haongei Kiingereza"], "english": "My child doesn't speak English"}
+{"id": "edu_06", "domain": "educational", "somali": "Goorma ayay iskuulka bilaabataa?", "references": ["Shule huanza lini?", "Shule inaanza saa ngapi?"], "english": "When does school start?"}
+{"id": "edu_07", "domain": "educational", "somali": "Ma jiraa barnaamij cunto bilaash ah?", "references": ["Je, kuna programu ya chakula cha bure?", "Kuna mpango wa chakula bila malipo?"], "english": "Is there a free lunch program?"}
+{"id": "edu_08", "domain": "educational", "somali": "Macalinka aan la hadlo sida?", "references": ["Ninawezaje kuwasiliana na mwalimu?", "Niongee vipi na mwalimu?"], "english": "How do I contact the teacher?"}
+{"id": "edu_09", "domain": "educational", "somali": "Cunugayga wuxuu u baahan yahay caawinaad gaar ah", "references": ["Mtoto wangu anahitaji msaada maalum", "Mwanangu anahitaji huduma maalum"], "english": "My child needs special assistance"}
+{"id": "edu_10", "domain": "educational", "somali": "Bus-ka iskuulka xaggee ayaa la sugaa?", "references": ["Basi la shule linangojewa wapi?", "Kituo cha basi ya shule kiko wapi?"], "english": "Where is the school bus stop?"}
