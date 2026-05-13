@@ -2890,5 +2890,90 @@ Given 43% overall empty rate and failed few-shot mitigation:
 
 ---
 
-*Last updated: May 13, 2026 (Late Evening) - Few-shot experiment complete, demo strategy defined*
+## Audio Capability Investigation (Phase 3)
+
+### Research Question
+
+Can Gemma models with native audio capabilities use our LoRA adapter for speech-to-translation without a separate ASR step?
+
+### Current Architecture
+
+```
+┌─────────────────────┐     ┌─────────────────────┐     ┌─────────────────────┐
+│  Audio Input        │     │  Whisper ASR        │     │  Daraja Model       │
+│  (Microphone)       │ --> │  (Transformers.js)  │ --> │  (Gemma 2B + LoRA)  │
+│                     │     │  Speech → Text      │     │  Text → Translation │
+└─────────────────────┘     └─────────────────────┘     └─────────────────────┘
+```
+
+**Current pipeline:**
+1. Audio captured via browser MediaRecorder
+2. Whisper (via Transformers.js) transcribes to Somali text
+3. Daraja model translates Somali → Swahili
+
+### Findings
+
+**Available Ollama models:**
+- `daraja-so-sw:latest` - Our fine-tuned Gemma 2B (text-only)
+- `gemma3:4b` - Base Gemma 3 (vision + text, no native audio)
+
+**Audio capability status:**
+1. **Gemma 2B** (our base model) - No native audio capability
+2. **Gemma 3 4B** - Multimodal for vision/text, no audio input
+3. **Gemma 4** (as of May 2026) - Vision/text, audio input not available in Ollama
+
+**Conclusion:** Native speech-to-translation is not currently feasible with available Gemma models. The Whisper + Daraja pipeline remains the correct approach.
+
+### Recommendation
+
+Maintain current architecture:
+- **Whisper ASR** handles speech-to-text (supports Somali)
+- **Daraja LoRA** handles translation (domain-specific)
+- **Separation of concerns** allows independent optimization of each stage
+
+This two-stage approach is also more robust:
+- ASR errors can be displayed and corrected by user before translation
+- Confidence scores can be computed independently for each stage
+- Different audio/translation models can be swapped without full retraining
+
+### Future Work
+
+If Gemma (or another model) adds native audio input with LoRA support:
+1. Test if translation LoRA applies to audio encoder
+2. Evaluate latency vs accuracy tradeoff
+3. Consider hybrid approach (audio → text verification → translation)
+
+---
+
+## Features Implemented (Grand Prize Phase 4)
+
+### Medication Safety Vision Feature
+
+Added new page `/medication` for reading medication labels:
+
+**Functionality:**
+1. Upload or camera capture medication label photo
+2. Vision model (gemma3:4b) extracts text via OCR
+3. Parses key safety information:
+   - Medication name
+   - Dosage amount
+   - Frequency instructions
+   - Warnings (highlighted in red)
+   - Side effects (highlighted in yellow)
+4. Translates full label to Somali or Swahili
+5. Confidence scoring with verification warnings
+
+**Safety considerations:**
+- Prominent "verify with healthcare provider" notice
+- Low-confidence translations flagged for human review
+- No medical advice provided, only translation assistance
+
+**Files added/modified:**
+- `app/src/pages/MedicationSafety.tsx` (new page)
+- `app/src/App.tsx` (route added)
+- `app/src/components/layout/Navigation.tsx` (nav link added)
+
+---
+
+*Last updated: May 13, 2026 (Night) - Audio capability research complete, medication safety feature implemented*
 
