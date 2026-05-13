@@ -4,6 +4,7 @@ import { Navigation } from './components/layout/Navigation';
 import { InterviewSession } from './components/interview/InterviewSession';
 import { WorkflowSelection } from './pages/WorkflowSelection';
 import { QuickTranslate } from './pages/QuickTranslate';
+import { MedicationSafety } from './pages/MedicationSafety';
 import { History } from './pages/History';
 import { Settings } from './pages/Settings';
 import { useOfflineSync } from './hooks/useOfflineSync';
@@ -118,6 +119,7 @@ function App() {
           <Route path="/interview" element={<WorkflowSelection />} />
           <Route path="/interview/:workflowType" element={<InterviewSession />} />
           <Route path="/quick-translate" element={<QuickTranslate />} />
+          <Route path="/medication" element={<MedicationSafety />} />
           <Route path="/history" element={<History />} />
           <Route path="/settings" element={<Settings />} />
         </Routes>

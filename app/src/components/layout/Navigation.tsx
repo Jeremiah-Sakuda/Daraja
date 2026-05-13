@@ -1,5 +1,5 @@
 import { useLocation, Link } from 'react-router-dom';
-import { Home, MessageSquare, Languages, Clock, Settings } from 'lucide-react';
+import { Home, MessageSquare, Languages, Pill, Clock, Settings } from 'lucide-react';
 
 export function Navigation() {
   const location = useLocation();
@@ -8,6 +8,7 @@ export function Navigation() {
     { path: '/', icon: Home, label: 'Home' },
     { path: '/interview', icon: MessageSquare, label: 'Interview' },
     { path: '/quick-translate', icon: Languages, label: 'Translate' },
+    { path: '/medication', icon: Pill, label: 'Meds' },
     { path: '/history', icon: Clock, label: 'History' },
     { path: '/settings', icon: Settings, label: 'Settings' },
   ];
