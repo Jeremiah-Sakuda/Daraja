@@ -10,21 +10,21 @@ Millions of displaced people speak languages poorly served by existing translati
 
 ## Our Approach
 
-Daraja uses a self-distilling pipeline:
+Daraja uses a fine-tuning pipeline:
 
-1. **Seed Collection** — Gather existing parallel corpora (OPUS, JW300, Flores-200)
-2. **Synthetic Generation** — Use Gemma 31B to generate additional training pairs via back-translation and paraphrase augmentation
-3. **Validation** — Filter generated pairs using semantic similarity (LaBSE embeddings)
-4. **Distillation** — Fine-tune Gemma E4B using Unsloth QLoRA to create a compact, fast model
+1. **Data Collection** — NLLB parallel corpus (630K Somali-Swahili pairs from OPUS)
+2. **Filtering** — Remove religious content, length outliers, bad ratios (281K pairs retained)
+3. **Training** — Fine-tune Gemma 4 E2B using QLoRA (50K pairs, 2 epochs)
+4. **Quantization** — Convert to Q4_K_M GGUF for efficient inference
 5. **Deployment** — Package for Ollama with offline-first PWA demo
 
 ## Target Language Pairs
 
-| Source | Target | Status |
-|--------|--------|--------|
-| Somali | Swahili | 🔄 In Progress |
-| Tigrinya | Arabic | Planned |
-| Dari | Turkish | Planned |
+| Source | Target | Model | Status |
+|--------|--------|-------|--------|
+| Somali | Swahili | `daraja-so-sw` | ✅ Trained |
+| Tigrinya | Arabic | — | 🔮 Planned |
+| Dari | Turkish | — | 🔮 Planned |
 
 ## Repository Structure
 
@@ -72,10 +72,27 @@ The pipeline notebooks are designed to run on Kaggle with GPU acceleration:
 
 ## Evaluation
 
-| Metric | Baseline (E4B) | Daraja | Improvement |
-|--------|---------------|--------|-------------|
-| BLEU | TBD | TBD | Target: +15 |
-| chrF++ | TBD | TBD | — |
+**Somali → Swahili (daraja-so-sw)**
+
+| Domain | chrF++ | Empty Output Rate | Notes |
+|--------|--------|-------------------|-------|
+| Medical | 44.4 | 10% | ✅ Demo-ready |
+| Legal | 38.3 | 50% | ⚠️ High variance |
+| Educational | 16.9 | 70% | ❌ Vocabulary gap |
+| **Overall** | **33.4** | **43%** | |
+
+**Model:** Gemma 4 E2B fine-tuned with QLoRA (r=32, alpha=64)
+**Training:** 50K filtered NLLB pairs, 2 epochs, final loss 1.67
+**Quantization:** Q4_K_M GGUF (3.4 GB)
+
+See [DEV_LOG.md](DEV_LOG.md) for detailed diagnostics on the educational domain gap.
+
+## Known Limitations
+
+1. **Unidirectional only** — Somali→Swahili works; Swahili→Somali requires separate model
+2. **Educational vocabulary gap** — Words like `macalinka` (teacher), `fasalka` (grade) return empty outputs due to NLLB corpus bias
+3. **43% empty output rate** — Significant failure rate on legal/educational queries
+4. **Medical domain strongest** — Use for clinic intake, symptom description; other domains need augmentation
 
 ## Contributing
 
