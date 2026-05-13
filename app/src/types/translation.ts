@@ -88,7 +88,7 @@ export const LANGUAGE_PAIRS: LanguagePair[] = [
       direction: 'rtl',
     },
     modelName: 'daraja-ti-ar',
-    status: 'unavailable',
+    status: 'available',
   },
   {
     id: 'prs-tr',
@@ -107,7 +107,65 @@ export const LANGUAGE_PAIRS: LanguagePair[] = [
       direction: 'ltr',
     },
     modelName: 'daraja-prs-tr',
-    status: 'unavailable',
+    status: 'available',
+  },
+  // Reverse direction pairs for bidirectional support
+  {
+    id: 'sw-so',
+    source: {
+      code: 'sw',
+      name: 'Swahili',
+      nativeName: 'Kiswahili',
+      script: 'Latin',
+      direction: 'ltr',
+    },
+    target: {
+      code: 'so',
+      name: 'Somali',
+      nativeName: 'Soomaali',
+      script: 'Latin',
+      direction: 'ltr',
+    },
+    modelName: 'daraja-sw-so',
+    status: 'available',
+  },
+  {
+    id: 'ar-ti',
+    source: {
+      code: 'ar',
+      name: 'Arabic',
+      nativeName: 'العربية',
+      script: 'Arabic',
+      direction: 'rtl',
+    },
+    target: {
+      code: 'ti',
+      name: 'Tigrinya',
+      nativeName: 'ትግርኛ',
+      script: 'Ethiopic',
+      direction: 'ltr',
+    },
+    modelName: 'daraja-ar-ti',
+    status: 'available',
+  },
+  {
+    id: 'tr-prs',
+    source: {
+      code: 'tr',
+      name: 'Turkish',
+      nativeName: 'Türkçe',
+      script: 'Latin',
+      direction: 'ltr',
+    },
+    target: {
+      code: 'prs',
+      name: 'Dari',
+      nativeName: 'دری',
+      script: 'Arabic',
+      direction: 'rtl',
+    },
+    modelName: 'daraja-tr-prs',
+    status: 'available',
   },
 ];
 

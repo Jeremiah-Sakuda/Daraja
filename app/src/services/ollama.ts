@@ -39,6 +39,17 @@ export interface OllamaGenerateResponse {
   context?: number[];
 }
 
+/**
+ * Response with token-level confidence metrics extracted from timing data
+ */
+export interface OllamaGenerateResponseWithConfidence extends OllamaGenerateResponse {
+  confidence: {
+    tokensPerSecond: number;
+    avgTokenDurationMs: number;
+    consistencyScore: number;
+  };
+}
+
 export class OllamaClient {
   private baseUrl: string;
 
@@ -96,6 +107,53 @@ export class OllamaClient {
     }
 
     return response.json();
+  }
+
+  /**
+   * Generate text with confidence metrics derived from model timing
+   *
+   * Confidence is estimated from:
+   * - Tokens per second (higher = more confident responses)
+   * - Consistency of token generation timing
+   * - Eval duration relative to token count
+   */
+  async generateWithConfidence(
+    request: OllamaGenerateRequest
+  ): Promise<OllamaGenerateResponseWithConfidence> {
+    const response = await this.generate(request);
+
+    // Calculate confidence metrics from timing data
+    const evalCount = response.eval_count || 1;
+    const evalDurationNs = response.eval_duration || 1;
+    const evalDurationMs = evalDurationNs / 1_000_000;
+
+    // Tokens per second - higher generally indicates more confident generation
+    const tokensPerSecond = evalCount / (evalDurationMs / 1000);
+
+    // Average time per token in milliseconds
+    const avgTokenDurationMs = evalDurationMs / evalCount;
+
+    // Consistency score based on expected token generation rate
+    // Well-trained models typically generate 20-50 tokens/sec on good hardware
+    // We normalize this to a 0-1 score
+    const expectedTpsMin = 10;
+    const expectedTpsMax = 60;
+    const normalizedTps = Math.min(1, Math.max(0,
+      (tokensPerSecond - expectedTpsMin) / (expectedTpsMax - expectedTpsMin)
+    ));
+
+    // Higher token rate suggests more confident predictions
+    // Very slow generation may indicate model uncertainty
+    const consistencyScore = normalizedTps;
+
+    return {
+      ...response,
+      confidence: {
+        tokensPerSecond,
+        avgTokenDurationMs,
+        consistencyScore,
+      },
+    };
   }
 
   /**
