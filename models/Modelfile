@@ -1,0 +1,17 @@
+# Daraja Somali-Swahili Translation Model
+# Based on Gemma 4 E2B fine-tuned on NLLB parallel corpus
+
+FROM ./daraja-gemma4-q4.gguf
+
+# Simple template - pass prompt directly
+# The calling code should format: "Translate Somali to Swahili:\n{text}\nSwahili:\n"
+TEMPLATE """{{ .Prompt }}"""
+
+# Generation parameters optimized for translation
+PARAMETER temperature 0
+PARAMETER top_p 0.9
+PARAMETER repeat_penalty 1.2
+PARAMETER num_predict 200
+
+# Stop at first newline (translation complete)
+PARAMETER stop "\n"
