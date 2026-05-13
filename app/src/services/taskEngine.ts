@@ -8,7 +8,7 @@ import {
   TaskEngineState,
   TaskEngineCall,
   TaskEngineResponse,
-  TaskEngineAction,
+  TaskEngineAction as _TaskEngineAction,
   PopulateFieldArgs,
   FlagForReviewArgs,
   RequestClarificationArgs,
@@ -19,7 +19,7 @@ import {
   TASK_ENGINE_TOOLS,
 } from '../types/taskEngine';
 import { WorkflowSession, FieldResponse, TranslationRecord } from '../types/workflow';
-import { ollamaClient } from './ollama';
+import { ollamaClient as _ollamaClient } from './ollama';
 
 // Confidence thresholds for automatic flagging
 const CONFIDENCE_THRESHOLDS = {
@@ -30,7 +30,7 @@ const CONFIDENCE_THRESHOLDS = {
 
 export class TaskEngine {
   private state: TaskEngineState;
-  private session: WorkflowSession | null = null;
+  private _session: WorkflowSession | null = null;
   private listeners: Set<(state: TaskEngineState) => void> = new Set();
   private onFieldUpdate?: (fieldId: string, response: FieldResponse, translation: TranslationRecord) => void;
   private onClarificationRequest?: (request: ClarificationRequest) => void;
@@ -52,7 +52,7 @@ export class TaskEngine {
    * Start the task engine with a workflow session
    */
   start(session: WorkflowSession): void {
-    this.session = session;
+    this._session = session;
     this.state.isActive = true;
     this.state.formId = session.id;
     this.notifyListeners();
@@ -176,7 +176,7 @@ export class TaskEngine {
   private detectFlags(
     sourceText: string,
     translatedText: string,
-    confidence: number
+    _confidence: number
   ): Array<{ reason: ReviewReason; details: string }> {
     const flags: Array<{ reason: ReviewReason; details: string }> = [];
 
@@ -426,7 +426,7 @@ export class TaskEngine {
       isFinalized: false,
       startedAt: Date.now(),
     };
-    this.session = null;
+    this._session = null;
     this.notifyListeners();
   }
 }

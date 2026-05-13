@@ -181,7 +181,6 @@ class DocumentOcrService {
     const ocrResult = await this.extractText(imageData);
 
     // Then translate
-    const translationPrompt = TRANSLATION_PROMPT(ocrResult.language, targetLanguage);
     const translatedText = await this.translate(
       ocrResult.text,
       ocrResult.language,
@@ -323,7 +322,7 @@ class DocumentOcrService {
   /**
    * Parse structured fields from extracted text
    */
-  private parseFields(text: string, documentType: DocumentType): ExtractedField[] {
+  private parseFields(text: string, _documentType: DocumentType): ExtractedField[] {
     const fields: ExtractedField[] = [];
     const lines = text.split('\n');
 

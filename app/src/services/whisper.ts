@@ -12,9 +12,8 @@ interface TranscriptionOutput {
   }>;
 }
 
-interface WhisperPipeline {
-  (audio: Float32Array | string, options?: TranscriptionOptions): Promise<TranscriptionOutput>;
-}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type WhisperPipeline = any;
 
 interface TranscriptionOptions {
   language?: string;
@@ -143,7 +142,8 @@ class WhisperService {
         // Use WebGPU if available, fallback to WASM
         device: 'webgpu',
         dtype: 'fp16',
-      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any);
 
       this.updateState({
         isLoaded: true,
@@ -217,7 +217,7 @@ class WhisperService {
     const duration = (performance.now() - startTime) / 1000;
 
     // Process segments if available
-    const segments = result.chunks?.map((chunk) => ({
+    const segments = result.chunks?.map((chunk: { text: string; timestamp: [number, number] }) => ({
       text: chunk.text,
       start: chunk.timestamp[0],
       end: chunk.timestamp[1],
