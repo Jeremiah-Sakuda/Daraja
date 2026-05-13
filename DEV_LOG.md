@@ -2098,3 +2098,585 @@ Key finding: Model struggles with short humanitarian phrases but works well on l
 
 *Last updated: May 13, 2026 (Evening) - Sprints 1-3 complete*
 
+---
+
+## Complete Technical Documentation
+
+### Service Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                          DARAJA APP                             │
+│                     (React + TypeScript)                        │
+├─────────────────────────────────────────────────────────────────┤
+│  Pages                                                          │
+│  ├── QuickTranslate.tsx    Voice/text translation interface     │
+│  ├── Interview.tsx         Structured medical/legal workflows   │
+│  ├── DocumentUpload.tsx    OCR + document analysis              │
+│  └── Settings.tsx          Model/language configuration         │
+├─────────────────────────────────────────────────────────────────┤
+│  Services                                                       │
+│  ├── translation.ts        Core translation via Ollama          │
+│  ├── ollama.ts            Ollama API client                     │
+│  ├── whisper.ts           Speech-to-text (Transformers.js)      │
+│  ├── tts.ts               Text-to-speech (Web Speech API)       │
+│  ├── documentOcr.ts       Vision model OCR + analysis           │
+│  └── resourceNavigation.ts Keyword-based resource routing       │
+├─────────────────────────────────────────────────────────────────┤
+│  External Dependencies                                          │
+│  ├── Ollama (localhost:11434)    Local LLM inference            │
+│  ├── @xenova/transformers        Browser-based Whisper          │
+│  └── Web Speech API              Browser TTS                    │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+### Service API Reference
+
+#### 1. Translation Service (`translation.ts`)
+
+**Purpose:** Translate text between language pairs using fine-tuned Ollama models.
+
+**Supported Directions:**
+| Direction | Model | Status |
+|-----------|-------|--------|
+| Somali → Swahili | `daraja-so-sw` | ✅ Trained |
+| Tigrinya → Arabic | `daraja-ti-ar` | 🔮 Future |
+| Dari → Turkish | `daraja-prs-tr` | 🔮 Future |
+
+**API:**
+```typescript
+interface TranslationRequest {
+  text: string;        // Input text to translate
+  sourceLang: string;  // Source language code ('so', 'sw', 'en')
+  targetLang: string;  // Target language code ('so', 'sw', 'en')
+  domain?: string;     // Optional domain hint ('medical', 'legal', 'education')
+}
+
+interface TranslationResponse {
+  sourceText: string;
+  translatedText: string;
+  confidence: number;           // 0-1 score
+  confidenceLevel: 'high' | 'medium' | 'low';
+  timestamp: number;
+  modelUsed: string;
+}
+
+async function translate(request: TranslationRequest): Promise<TranslationResponse>
+```
+
+**Prompt Format (matches training):**
+```
+Translate Somali to Swahili:
+{input_text}
+Swahili:
+```
+
+**Ollama API Options:**
+```json
+{
+  "temperature": 0,
+  "top_p": 0.9,
+  "num_predict": 100,
+  "stop": ["\n"]
+}
+```
+
+---
+
+#### 2. Ollama Client (`ollama.ts`)
+
+**Purpose:** Low-level client for Ollama API communication.
+
+**API:**
+```typescript
+interface OllamaClient {
+  // Check if Ollama server is running
+  isAvailable(): Promise<boolean>;
+
+  // List available models
+  listModels(): Promise<ModelInfo[]>;
+
+  // Generate text completion
+  generate(params: GenerateParams): Promise<GenerateResponse>;
+
+  // Generate with streaming
+  generateStream(params: GenerateParams): AsyncGenerator<string>;
+}
+
+interface GenerateParams {
+  model: string;
+  prompt: string;
+  options?: {
+    temperature?: number;
+    top_p?: number;
+    num_predict?: number;
+    stop?: string[];
+  };
+}
+```
+
+**Default Configuration:**
+- Base URL: `http://localhost:11434`
+- Timeout: 60 seconds
+- Stream: false (batch mode)
+
+---
+
+#### 3. Whisper Service (`whisper.ts`)
+
+**Purpose:** Browser-based speech-to-text using Transformers.js.
+
+**Model:** `Xenova/whisper-tiny.en` (loaded on first use)
+
+**API:**
+```typescript
+interface WhisperService {
+  // Load model (called automatically on first transcribe)
+  load(): Promise<void>;
+
+  // Transcribe audio blob
+  transcribe(audioBlob: Blob): Promise<TranscriptionResult>;
+
+  // Check if model is loaded
+  isLoaded(): boolean;
+}
+
+interface TranscriptionResult {
+  text: string;
+  chunks?: { text: string; timestamp: [number, number] }[];
+}
+```
+
+**Usage Notes:**
+- Model downloads ~40MB on first use
+- Runs entirely in browser (offline-capable after download)
+- Best with clear audio, <30 seconds per clip
+
+---
+
+#### 4. TTS Service (`tts.ts`)
+
+**Purpose:** Text-to-speech output using Web Speech API.
+
+**Supported Languages:**
+| Code | Language | Browser Support |
+|------|----------|-----------------|
+| sw | Swahili (Kenya) | ✅ Most browsers |
+| so | Somali | ⚠️ Limited |
+| en | English | ✅ All browsers |
+| ar | Arabic | ✅ Most browsers |
+
+**API:**
+```typescript
+interface TTSService {
+  // Speak text in specified language
+  speak(text: string, options?: TTSOptions): Promise<void>;
+
+  // Stop current speech
+  stop(): void;
+
+  // Pause/resume speech
+  pause(): void;
+  resume(): void;
+
+  // Check state
+  isSpeaking(): boolean;
+  isLanguageSupported(langCode: string): boolean;
+}
+
+interface TTSOptions {
+  lang?: string;   // Language code
+  rate?: number;   // Speed (0.1-10, default 0.9)
+  pitch?: number;  // Pitch (0-2, default 1)
+  volume?: number; // Volume (0-1, default 1)
+}
+```
+
+**Fallback Behavior:**
+If target language voice unavailable, falls back to English with console warning.
+
+---
+
+#### 5. Document OCR Service (`documentOcr.ts`)
+
+**Purpose:** Extract and translate text from document images using vision models.
+
+**Vision Models:**
+```typescript
+const VISION_MODELS = {
+  default: 'llava:13b',
+  fast: 'llava:7b',
+  gemma: 'gemma-vision:latest',
+};
+```
+
+**API:**
+```typescript
+interface DocumentOcrService {
+  // Extract text from image
+  extractText(imageData: string): Promise<OcrResult>;
+
+  // Extract and translate
+  extractAndTranslate(imageData: string, targetLang: string): Promise<TranslatedOcrResult>;
+
+  // Analyze document (summary, fields, actions)
+  analyzeDocument(text: string, sourceLang: string, targetLang: string): Promise<DocumentAnalysis>;
+}
+
+interface OcrResult {
+  text: string;
+  language: string;
+  confidence: number;
+  documentType?: DocumentType;
+  fields?: ExtractedField[];
+  processingTime: number;
+}
+
+interface DocumentAnalysis {
+  summary: string;
+  keyFields: { name: string; value: string }[];
+  requiredActions: string[];
+  deadlines: string;
+  confidence: number;
+}
+
+type DocumentType =
+  | 'identity_document'
+  | 'medical_record'
+  | 'legal_document'
+  | 'travel_document'
+  | 'certificate'
+  | 'letter'
+  | 'form'
+  | 'unknown';
+```
+
+**Document Analysis Prompt:**
+```
+Analyze this {sourceLang} document and provide a structured response in {targetLang}:
+
+Document text:
+{text}
+
+Provide your response in this exact format:
+SUMMARY: (2-3 sentence summary)
+KEY_FIELDS:
+- Field name: value
+REQUIRED_ACTIONS:
+- Action 1
+DEADLINES: (any dates or "None specified")
+```
+
+---
+
+#### 6. Resource Navigation Service (`resourceNavigation.ts`)
+
+**Purpose:** Route user queries to appropriate humanitarian resources.
+
+**Design Decision:** Uses keyword matching instead of LLM function calling for reliability. Function calling proved inconsistent with fine-tuned models.
+
+**Resource Types:**
+| Type | Somali Keywords | Swahili Keywords |
+|------|-----------------|------------------|
+| clinic | dhakhtar, bukaan, isbitaal | daktari, hospitali, kliniki |
+| legal_aid | qareen, sharci, maxkamad | wakili, sheria, mahakama |
+| food_pantry | cunto, gaajo, raashin | chakula, njaa, msaada |
+| shelter | guri, hoy, seexasho | nyumba, makazi, kulala |
+| education | iskuul, waxbarasho, dugsiga | shule, elimu, kusoma |
+
+**API:**
+```typescript
+interface ResourceQuery {
+  text: string;
+  language: 'so' | 'sw' | 'en';
+  location?: 'boston' | 'nairobi' | 'dadaab';
+}
+
+interface ResourceResult {
+  type: ResourceType | null;
+  resources: Resource[];
+  confidence: number;
+  responseText: string;
+}
+
+function findResources(query: ResourceQuery): ResourceResult;
+function getResourcesByType(type: ResourceType, location?: string): Resource[];
+function getAvailableResourceTypes(): ResourceType[];
+```
+
+**Hardcoded Resources (Demo):**
+- **Boston:** East Boston Health Center, PAIR legal aid, Greater Boston Food Bank
+- **Nairobi:** UNHCR Health Clinic, Kituo Cha Sheria
+- **Dadaab:** IRC Health Post
+
+---
+
+### Evaluation Methodology
+
+#### Multi-Reference chrF++ Evaluation
+
+**Why chrF++ over BLEU:**
+- Works better for morphologically rich languages (Swahili, Somali)
+- Character-level matching handles agglutinative word forms
+- More robust for low-resource languages with limited references
+
+**Evaluation Script:** `eval/run_eval.py`
+
+```python
+from sacrebleu.metrics import CHRF
+
+def evaluate_translations(model_outputs, references):
+    """
+    Compute chrF++ with multiple references.
+
+    Args:
+        model_outputs: List of translated strings
+        references: List of lists (multiple refs per source)
+
+    Returns:
+        chrF++ score (0-100 scale)
+    """
+    chrf = CHRF(word_order=2)  # chrF++ includes word bigrams
+    score = chrf.corpus_score(model_outputs, references)
+    return score.score
+```
+
+**Evaluation Set:** `eval/humanitarian_eval_set.jsonl`
+- 30 sentences total (10 medical, 10 legal, 10 educational)
+- Each sentence has 2-3 acceptable Swahili translations
+- Sources: original composition based on real humanitarian scenarios
+
+**Results by Domain:**
+| Domain | Sentences | chrF++ | Notes |
+|--------|-----------|--------|-------|
+| Medical | 10 | 44.4 | Best performance |
+| Legal | 10 | 38.3 | Good, some formality gaps |
+| Educational | 10 | 16.9 | Needs improvement |
+| **Overall** | **30** | **33.4** | |
+
+**Sample Evaluation Pairs:**
+```jsonl
+{"somali": "Ilmahaygu waa bukaan", "swahili": ["Mtoto wangu ni mgonjwa", "Mtoto wangu anaumwa"], "domain": "medical"}
+{"somali": "Maxay tahay xaqa qaxootiga?", "swahili": ["Nini haki za wakimbizi?", "Wakimbizi wana haki gani?"], "domain": "legal"}
+{"somali": "Goorma ayuu dugsiga bilaabayaa?", "swahili": ["Shule inaanza lini?", "Shule itaanza wakati gani?"], "domain": "education"}
+```
+
+---
+
+### Model Training Summary
+
+#### Final Configuration (Gemma 4 E2B)
+
+| Parameter | Value |
+|-----------|-------|
+| Base Model | `google/gemma-4-E2B-it` |
+| Parameters | 5.18B total, 75.8M trainable (1.46%) |
+| Quantization | 4-bit NF4 |
+| LoRA Rank | 32 |
+| LoRA Alpha | 64 |
+| Target Modules | `all-linear` |
+| Training Data | 50,000 filtered pairs |
+| Epochs | 2 |
+| Batch Size | 4 × 8 = 32 effective |
+| Learning Rate | 2e-4 |
+| Final Loss | 1.67 |
+| Training Time | ~8.75 hours on T4 |
+
+#### Data Pipeline
+
+```
+Raw NLLB Corpus (630,267 pairs)
+         │
+         ▼
+   Religious Filter (pattern matching)
+         │
+         ▼
+   Length Filter (5-80 chars)
+         │
+         ▼
+   Ratio Filter (0.5-2.0 length ratio)
+         │
+         ▼
+Clean Corpus (281,159 pairs, 44.6% retained)
+         │
+         ▼
+   Random Sample
+         │
+         ▼
+Training Set (50,000 pairs) + Eval Set (500 pairs)
+```
+
+#### Religious Content Filter
+
+```python
+religious_patterns = [
+    # Swahili religious terms
+    'Mungu', 'Mwenyezi', 'Yesu', 'Yehova', 'Biblia', 'Allah',
+    'mtume', 'nabii', 'malaika', 'dhambi', 'sala', 'ibada',
+    'gospel', 'injili', 'Kristo', 'msalaba', 'mitume',
+    'pepo', 'jahanamu', 'roho', 'takatifu',
+    # Somali religious terms
+    'Ilaah', 'Alle', 'Quraan', 'Nebi', 'Ciise',
+]
+```
+
+---
+
+### Deployment Instructions
+
+#### Prerequisites
+
+1. **Ollama** installed and running
+2. **GGUF file:** `models/daraja-gemma4-q4.gguf` (3.4 GB)
+3. **Node.js** 18+ for the app
+
+#### Step 1: Create Ollama Model
+
+```bash
+cd models
+ollama create daraja-so-sw -f Modelfile
+```
+
+**Modelfile contents:**
+```
+FROM ./daraja-gemma4-q4.gguf
+TEMPLATE """{{ .Prompt }}"""
+PARAMETER temperature 0
+PARAMETER top_p 0.9
+PARAMETER repeat_penalty 1.2
+PARAMETER num_predict 200
+```
+
+#### Step 2: Verify Model
+
+```bash
+# List models
+ollama list
+
+# Test translation
+curl -s http://localhost:11434/api/generate -d '{
+  "model": "daraja-so-sw",
+  "prompt": "Translate Somali to Swahili:\nMahadsanid\nSwahili:\n",
+  "stream": false,
+  "options": {"num_predict": 100, "stop": ["\n"]}
+}'
+```
+
+#### Step 3: Start App
+
+```bash
+cd app
+npm install
+npm run dev
+```
+
+App runs at `http://localhost:5173`
+
+---
+
+### Known Issues & Workarounds
+
+#### 1. Gemma 4 Thinking Mode Empty Outputs
+
+**Symptom:** Some short inputs return empty translations.
+
+**Cause:** Gemma 4's internal thinking process sometimes fills the entire context without producing output.
+
+**Workaround:**
+- Use longer, more complete sentences
+- Pass `stop: ["\n"]` via API options (not Modelfile)
+- Add domain context to prompts
+
+#### 2. Bidirectional Translation Not Supported
+
+**Symptom:** Swahili → Somali returns English or gibberish.
+
+**Cause:** Model was trained unidirectionally (So→Sw only).
+
+**Workaround:**
+- App detects unsupported direction and shows helpful error
+- Future: Train separate Sw→So model or use base Gemma 4
+
+#### 3. Build TypeScript Errors
+
+**Symptom:** `TS6133: unused variable` errors during build.
+
+**Solution:**
+- Prefix unused variables with `_` (e.g., `_documentType`)
+- Or disable in `tsconfig.json`:
+```json
+{
+  "compilerOptions": {
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
+  }
+}
+```
+
+---
+
+### File Structure
+
+```
+Daraja/
+├── app/                          # React frontend
+│   ├── src/
+│   │   ├── pages/               # Page components
+│   │   │   ├── QuickTranslate.tsx
+│   │   │   ├── Interview.tsx
+│   │   │   └── ...
+│   │   ├── services/            # Core services
+│   │   │   ├── translation.ts
+│   │   │   ├── ollama.ts
+│   │   │   ├── whisper.ts
+│   │   │   ├── tts.ts
+│   │   │   ├── documentOcr.ts
+│   │   │   └── resourceNavigation.ts
+│   │   ├── components/          # Reusable UI components
+│   │   └── types/               # TypeScript definitions
+│   ├── package.json
+│   └── tsconfig.json
+├── eval/                         # Evaluation scripts
+│   ├── humanitarian_eval_set.jsonl
+│   └── run_eval.py
+├── models/                       # Ollama model files
+│   ├── Modelfile
+│   └── daraja-gemma4-q4.gguf
+├── pipeline/                     # Training pipeline
+│   ├── notebooks/
+│   │   ├── 04_unsloth_finetuning.ipynb
+│   │   └── gemma4_train_colab.ipynb
+│   └── scripts/
+│       └── gemma4_train.py
+├── data/                         # Source data
+│   └── SOURCES.md
+└── DEV_LOG.md                    # This file
+```
+
+---
+
+### Commit History (May 13, 2026)
+
+1. `Fix TypeScript build errors and wire translation service to Ollama`
+2. `Add Ollama Modelfile, humanitarian eval set, and dev log`
+3. `Run humanitarian eval: chrF++ 33.4, medical 44.4, legal 38.3`
+4. `Handle unsupported translation directions (Sw→So requires base model)`
+5. `Add TTS service using Web Speech API`
+6. `Wire TTS Listen button in QuickTranslate`
+7. `Add document Q&A analysis capability`
+8. `Add resource navigation service with keyword routing`
+
+---
+
+### Links
+
+- **HuggingFace Model:** https://huggingface.co/JeremiahSKD/daraja-gemma4-so-sw-v1
+- **Kaggle Submission:** (pending)
+- **Demo Video:** (pending)
+
+---
+
+*Last updated: May 13, 2026 - Complete technical documentation added*
+
