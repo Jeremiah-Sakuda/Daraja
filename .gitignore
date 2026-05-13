@@ -16,7 +16,9 @@ pipeline/data/seed/
 pipeline/data/synthetic/
 so-sw-data/
 so.txt/
+so-sw.txt/
 *.txt.zip
+*.txt.gz
 *.parquet
 *.arrow
 *.csv
