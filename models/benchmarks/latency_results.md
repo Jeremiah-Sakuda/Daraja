@@ -101,18 +101,42 @@ Simulating a 30-minute RSD interview with typical interaction patterns:
 
 ## Benchmark Scripts
 
-Benchmarks are run using:
+Benchmarks are run using the scripts in `pipeline/scripts/`:
 
 ```bash
 # Install dependencies
-pip install httpx tqdm
+pip install httpx sacrebleu
 
-# Run benchmark
-python scripts/benchmark_latency.py \
+# Run latency benchmark
+python pipeline/scripts/benchmark_latency.py \
   --model daraja-so-sw \
-  --input data/evaluation/flores_so.txt \
+  --samples 100 \
   --output results/latency_benchmark.json
+
+# Run all Daraja models
+python pipeline/scripts/benchmark_latency.py \
+  --model all \
+  --output results/latency_benchmark.json
+
+# List available models
+python pipeline/scripts/benchmark_latency.py --model list
+
+# Run evaluation with BLEU/chrF++ metrics
+python pipeline/scripts/run_evaluation.py \
+  --model so-sw \
+  --output results/evaluation_results.json
+
+# Evaluate all language pairs
+python pipeline/scripts/run_evaluation.py \
+  --model all \
+  --output results/evaluation_results.json
 ```
+
+### Quick Start
+
+1. Ensure Ollama is running: `ollama serve`
+2. Install a Daraja model: `ollama pull daraja-so-sw`
+3. Run benchmark: `python pipeline/scripts/benchmark_latency.py --model daraja-so-sw --samples 50`
 
 ## Notes
 

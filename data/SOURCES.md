@@ -35,7 +35,9 @@ This manifest documents all seed data sources used in the Daraja translation pip
 
 **Retrieval Date**: 2026-04-27
 
-**SHA-256**: `[To be computed after download]`
+**SHA-256**: `[Pending download - run pipeline/scripts/download_seed_data.py]`
+
+**File Path**: `pipeline/data/seed/flores200/`
 
 ---
 
@@ -56,7 +58,9 @@ This manifest documents all seed data sources used in the Daraja translation pip
 
 **Retrieval Date**: 2026-04-27
 
-**SHA-256**: `[To be computed after download]`
+**SHA-256**: `[Pending download - run pipeline/scripts/download_seed_data.py]`
+
+**File Path**: `pipeline/data/seed/nllb/`
 
 ---
 
@@ -77,7 +81,9 @@ This manifest documents all seed data sources used in the Daraja translation pip
 
 **Retrieval Date**: 2026-04-27
 
-**SHA-256**: `[To be computed after download]`
+**SHA-256**: `[Pending download - run pipeline/scripts/download_seed_data.py]`
+
+**File Path**: `pipeline/data/seed/tatoeba/`
 
 ---
 
@@ -97,7 +103,9 @@ This manifest documents all seed data sources used in the Daraja translation pip
 
 **Retrieval Date**: 2026-04-27
 
-**SHA-256**: `[To be computed after download]`
+**SHA-256**: `[Pending download - run pipeline/scripts/download_seed_data.py]`
+
+**File Path**: `pipeline/data/seed/wikimatrix/`
 
 ---
 
@@ -118,7 +126,9 @@ This manifest documents all seed data sources used in the Daraja translation pip
 
 **Retrieval Date**: 2026-04-27
 
-**SHA-256**: `[To be computed after download]`
+**SHA-256**: `[Pending download - run pipeline/scripts/download_seed_data.py]`
+
+**File Path**: `pipeline/data/seed/commonvoice/`
 
 ---
 
@@ -139,7 +149,51 @@ This manifest documents all seed data sources used in the Daraja translation pip
 
 **Retrieval Date**: 2026-04-27
 
-**SHA-256**: `[To be computed after download]`
+**SHA-256**: `[Pending download - run pipeline/scripts/download_seed_data.py]`
+
+**File Path**: `pipeline/data/seed/masakhane/`
+
+---
+
+## Terminology Datasets (Downloaded)
+
+The following terminology datasets have been downloaded and verified:
+
+### UNHCR RSD Vocabulary
+
+**Description**: Refugee Status Determination terminology for humanitarian contexts.
+
+**License**: CC-BY 4.0 (compiled from public UNHCR documents)
+
+**File Path**: `pipeline/data/terminology/unhcr_rsd_vocabulary.json`
+
+**SHA-256**: `f290e0a53c3877c5400e12ea8b6dc6bda225fa43d30cb29da6877a9d686d79eb`
+
+**Retrieval Date**: 2026-04-14
+
+### WHO ICD-10 Primary Care
+
+**Description**: International Classification of Diseases terminology for medical contexts.
+
+**License**: CC-BY 4.0 (simplified primary care subset)
+
+**File Path**: `pipeline/data/terminology/who_icd10_primary_care.json`
+
+**SHA-256**: `5ce6b5a681fbff7ab13604a7dbcb298378f9fc757cb66573786b7f9adb6b5499`
+
+**Retrieval Date**: 2026-04-14
+
+### Administrative Registration Terms
+
+**Description**: Common administrative and civil registration terminology.
+
+**License**: CC-BY 4.0 (compiled from public government documents)
+
+**File Path**: `pipeline/data/terminology/administrative_registration.json`
+
+**SHA-256**: `439c23bd8e75001691a2b96e72fedd28604eedbcb38952661b80e6942a0ec90c`
+
+**Retrieval Date**: 2026-04-14
 
 ---
 
