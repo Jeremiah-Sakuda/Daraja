@@ -405,6 +405,109 @@ class DocumentOcrService {
 
     return Math.max(0.1, Math.min(1, confidence));
   }
+
+  /**
+   * Analyze document and generate Q&A summary
+   * Provides: translation, summary, key fields, and required actions
+   */
+  async analyzeDocument(
+    text: string,
+    sourceLanguage: string,
+    targetLanguage: string
+  ): Promise<DocumentAnalysis> {
+    const prompt = `Analyze this ${sourceLanguage} document and provide a structured response in ${targetLanguage}:
+
+Document text:
+${text}
+
+Provide your response in this exact format:
+SUMMARY: (2-3 sentence summary of the document's purpose)
+KEY_FIELDS:
+- Field name: value
+- Field name: value
+REQUIRED_ACTIONS:
+- Action 1
+- Action 2
+DEADLINES: (any dates or deadlines mentioned, or "None specified")
+
+Response:`;
+
+    try {
+      const response = await ollamaClient.generate({
+        model: 'daraja-so-sw',
+        prompt,
+        options: {
+          temperature: 0.3,
+          num_predict: 500,
+        },
+      });
+
+      return this.parseDocumentAnalysis(response.response, targetLanguage);
+    } catch (error) {
+      console.error('Document analysis failed:', error);
+      return {
+        summary: 'Unable to analyze document',
+        keyFields: [],
+        requiredActions: [],
+        deadlines: 'Unknown',
+        confidence: 0,
+      };
+    }
+  }
+
+  /**
+   * Parse the structured analysis response
+   */
+  private parseDocumentAnalysis(response: string, _targetLanguage: string): DocumentAnalysis {
+    const lines = response.split('\n');
+    let summary = '';
+    const keyFields: { name: string; value: string }[] = [];
+    const requiredActions: string[] = [];
+    let deadlines = 'None specified';
+    let currentSection = '';
+
+    for (const line of lines) {
+      const trimmed = line.trim();
+
+      if (trimmed.startsWith('SUMMARY:')) {
+        currentSection = 'summary';
+        summary = trimmed.replace('SUMMARY:', '').trim();
+      } else if (trimmed.startsWith('KEY_FIELDS:')) {
+        currentSection = 'fields';
+      } else if (trimmed.startsWith('REQUIRED_ACTIONS:')) {
+        currentSection = 'actions';
+      } else if (trimmed.startsWith('DEADLINES:')) {
+        currentSection = 'deadlines';
+        deadlines = trimmed.replace('DEADLINES:', '').trim();
+      } else if (trimmed.startsWith('-')) {
+        const content = trimmed.substring(1).trim();
+        if (currentSection === 'fields' && content.includes(':')) {
+          const [name, ...valueParts] = content.split(':');
+          keyFields.push({ name: name.trim(), value: valueParts.join(':').trim() });
+        } else if (currentSection === 'actions') {
+          requiredActions.push(content);
+        }
+      } else if (currentSection === 'summary' && trimmed) {
+        summary += ' ' + trimmed;
+      }
+    }
+
+    return {
+      summary: summary || 'Document summary not available',
+      keyFields,
+      requiredActions,
+      deadlines,
+      confidence: summary ? 0.7 : 0.3,
+    };
+  }
+}
+
+export interface DocumentAnalysis {
+  summary: string;
+  keyFields: { name: string; value: string }[];
+  requiredActions: string[];
+  deadlines: string;
+  confidence: number;
 }
 
 // Singleton instance
@@ -425,4 +528,15 @@ export async function extractAndTranslateDocument(
   targetLanguage: string
 ): Promise<TranslatedOcrResult> {
   return documentOcrService.extractAndTranslate(imageData, targetLanguage);
+}
+
+/**
+ * Convenience function for document analysis/Q&A
+ */
+export async function analyzeDocument(
+  text: string,
+  sourceLanguage: string,
+  targetLanguage: string
+): Promise<DocumentAnalysis> {
+  return documentOcrService.analyzeDocument(text, sourceLanguage, targetLanguage);
 }
