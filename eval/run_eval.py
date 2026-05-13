@@ -4,12 +4,13 @@ Runs multi-reference chrF++ and optional LLM-as-judge scoring
 """
 
 import json
-import subprocess
+import requests
 from pathlib import Path
 from sacrebleu.metrics import CHRF
 
 EVAL_FILE = Path(__file__).parent / "humanitarian_eval_set.jsonl"
 RESULTS_FILE = Path(__file__).parent / "eval_results.json"
+OLLAMA_URL = "http://localhost:11434/api/generate"
 
 
 def load_eval_set():
@@ -22,15 +23,47 @@ def load_eval_set():
 
 
 def translate_with_ollama(somali_text: str, model: str = "daraja-so-sw") -> str:
-    """Call Ollama to translate Somali to Swahili"""
+    """Call Ollama API to translate Somali to Swahili"""
     try:
-        result = subprocess.run(
-            ["ollama", "run", model, somali_text],
-            capture_output=True,
-            text=True,
-            timeout=30
+        prompt = f"Translate Somali to Swahili:\n{somali_text}\nSwahili:\n"
+        response = requests.post(
+            OLLAMA_URL,
+            json={
+                "model": model,
+                "prompt": prompt,
+                "stream": False,
+                "options": {
+                    "num_predict": 100,
+                    "stop": ["\n"]
+                }
+            },
+            timeout=60
         )
-        return result.stdout.strip()
+        result = response.json()
+        translation = result.get("response", "").strip()
+
+        # Clean up common artifacts
+        # Handle "English - Swahili" format
+        if " - " in translation:
+            parts = translation.split(" - ")
+            # Take the part that looks like Swahili (not English)
+            for part in reversed(parts):
+                part = part.strip().strip('"').strip()
+                # Skip if it looks like English (contains common English words)
+                if not any(eng in part.lower() for eng in ['the ', 'a ', 'is ', 'i ', 'my ', 'you ']):
+                    translation = part
+                    break
+
+        # Handle "Word: Translation" format
+        if ":" in translation and translation.index(":") < len(translation) // 2:
+            translation = translation.split(":", 1)[-1].strip()
+
+        translation = translation.strip('"').strip("'").strip()
+
+        # Remove trailing punctuation artifacts
+        translation = translation.rstrip('."\'')
+
+        return translation
     except Exception as e:
         print(f"Error translating '{somali_text}': {e}")
         return ""

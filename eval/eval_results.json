@@ -1,0 +1,314 @@
+{
+  "model": "daraja-so-sw",
+  "num_sentences": 30,
+  "overall_chrf": 33.43933741546448,
+  "domain_scores": {
+    "medical": 44.39744272471526,
+    "legal": 38.33740470729608,
+    "educational": 16.868567264663664
+  },
+  "translations": [
+    {
+      "id": "med_01",
+      "somali": "Ilmahaygu wuu xummadaa",
+      "hypothesis": "Mimi nina mtoto wa kiume",
+      "references": [
+        "Mtoto wangu ana homa",
+        "Mwanangu ana homa",
+        "Mtoto wangu anaumwa homa"
+      ],
+      "english": "My child has a fever"
+    },
+    {
+      "id": "med_02",
+      "somali": "Xaggee baa ku xanuunaya?",
+      "hypothesis": "Wapi kuna uchungu?\" au \"Ni wapi maumivu?\"?",
+      "references": [
+        "Unauma wapi?",
+        "Inauma wapi?",
+        "Ni wapi unahisi maumivu?"
+      ],
+      "english": "Where does it hurt?"
+    },
+    {
+      "id": "med_03",
+      "somali": "Daawadan qaado laba jeer maalintii",
+      "hypothesis": "",
+      "references": [
+        "Chukua dawa hii mara mbili kwa siku",
+        "Tumia dawa hii mara mbili kila siku"
+      ],
+      "english": "Take this medicine twice daily"
+    },
+    {
+      "id": "med_04",
+      "somali": "Waxaan u baahanahay dhakhtar",
+      "hypothesis": "I need a doctor. - Ninahitaji daktari",
+      "references": [
+        "Ninahitaji daktari",
+        "Nahitaji kuona daktari"
+      ],
+      "english": "I need a doctor"
+    },
+    {
+      "id": "med_05",
+      "somali": "Caloosha ayaa i xanuunaysa",
+      "hypothesis": "Mimi ninaogopa sana.\" - I am scared",
+      "references": [
+        "Tumbo langu linauma",
+        "Nina maumivu ya tumbo"
+      ],
+      "english": "My stomach hurts"
+    },
+    {
+      "id": "med_06",
+      "somali": "Uurka ma leedahay?",
+      "hypothesis": "Je, unafanya kazi?\" au \"Je, unafanya kazi?\"?",
+      "references": [
+        "Je, una mimba?",
+        "Je, wewe ni mjamzito?"
+      ],
+      "english": "Are you pregnant?"
+    },
+    {
+      "id": "med_07",
+      "somali": "Daawadayda waan dhammeystay",
+      "hypothesis": "Nimekumaliza kazi yangu",
+      "references": [
+        "Dawa yangu imeisha",
+        "Nimemaliza dawa yangu"
+      ],
+      "english": "I ran out of my medication"
+    },
+    {
+      "id": "med_08",
+      "somali": "Ma jiraa qof af Soomaali ku hadla?",
+      "hypothesis": "Je, kuna mtu anayezungumza Kiswahili? ",
+      "references": [
+        "Je, kuna mtu anayezungumza Kisomali?",
+        "Kuna mtu wa Kisomali hapa?"
+      ],
+      "english": "Is there someone who speaks Somali?"
+    },
+    {
+      "id": "med_09",
+      "somali": "Dhibaato neefsasho ayaan qabaa",
+      "hypothesis": "Nina shida ya kupumua",
+      "references": [
+        "Nina shida ya kupumua",
+        "Ninapata shida kupumua"
+      ],
+      "english": "I have trouble breathing"
+    },
+    {
+      "id": "med_10",
+      "somali": "Tallaalka COVID ma heshay?",
+      "hypothesis": "Talla alikuwa na COVID? - Did Talla get COVID??",
+      "references": [
+        "Je, umepata chanjo ya COVID?",
+        "Umechanjwa COVID?"
+      ],
+      "english": "Have you received the COVID vaccine?"
+    },
+    {
+      "id": "legal_01",
+      "somali": "Waxaan u baahanahay qareen",
+      "hypothesis": "",
+      "references": [
+        "Ninahitaji wakili",
+        "Nahitaji msaada wa kisheria"
+      ],
+      "english": "I need a lawyer"
+    },
+    {
+      "id": "legal_02",
+      "somali": "Goorma ayaa dacwadaydu tahay?",
+      "hypothesis": "",
+      "references": [
+        "Kesi yangu ni lini?",
+        "Tarehe ya kesi yangu ni ipi?"
+      ],
+      "english": "When is my court date?"
+    },
+    {
+      "id": "legal_03",
+      "somali": "Waxaan doonayaa in aan codsado magangelyo",
+      "hypothesis": "Nataka kuomba msaada.\" - I want to ask for help",
+      "references": [
+        "Nataka kuomba hifadhi",
+        "Ninataka kuomba ukimbizi"
+      ],
+      "english": "I want to apply for asylum"
+    },
+    {
+      "id": "legal_04",
+      "somali": "Xuquuqdayda waa maxay?",
+      "hypothesis": "",
+      "references": [
+        "Haki zangu ni zipi?",
+        "Nina haki gani?"
+      ],
+      "english": "What are my rights?"
+    },
+    {
+      "id": "legal_05",
+      "somali": "Ma haysto warqad aqoonsi",
+      "hypothesis": "",
+      "references": [
+        "Sina kitambulisho",
+        "Sina hati ya utambulisho"
+      ],
+      "english": "I don't have identification documents"
+    },
+    {
+      "id": "legal_06",
+      "somali": "Dalka goorma ayaan kasoo galay?",
+      "hypothesis": "Nimekuja nini nchini? - Where did I come to the country?",
+      "references": [
+        "Uliingia nchi lini?",
+        "Ulifika lini katika nchi hii?"
+      ],
+      "english": "When did you enter the country?"
+    },
+    {
+      "id": "legal_07",
+      "somali": "Qoyskaygii waa dalka kale",
+      "hypothesis": "Familia yangu iko nchi nyingine",
+      "references": [
+        "Familia yangu iko nchi nyingine",
+        "Jamaa zangu wako nchi nyingine"
+      ],
+      "english": "My family is in another country"
+    },
+    {
+      "id": "legal_08",
+      "somali": "Ma caddeyn karaa in aan khatar ku jiro",
+      "hypothesis": "Ninaweza kuelezea hatari?",
+      "references": [
+        "Ninaweza kuthibitisha kuwa niko hatarini",
+        "Naweza kuonyesha niko katika hatari"
+      ],
+      "english": "I can prove I am in danger"
+    },
+    {
+      "id": "legal_09",
+      "somali": "Warbixin qoraal ah ayaan u baahanahay",
+      "hypothesis": "",
+      "references": [
+        "Ninahitaji taarifa iliyoandikwa",
+        "Nahitaji maelezo yaliyoandikwa"
+      ],
+      "english": "I need a written statement"
+    },
+    {
+      "id": "legal_10",
+      "somali": "Gargaar bilaash ah ma jiraa?",
+      "hypothesis": "Je, kuna msaada wa bure?",
+      "references": [
+        "Je, kuna msaada wa bure?",
+        "Kuna huduma za bure?"
+      ],
+      "english": "Is there free help available?"
+    },
+    {
+      "id": "edu_01",
+      "somali": "Cunugayga waxaan rabaa inaan iskuul ka qoro",
+      "hypothesis": "",
+      "references": [
+        "Nataka kuandikisha mtoto wangu shuleni",
+        "Ninataka kumwandikisha mwanangu shuleni"
+      ],
+      "english": "I want to enroll my child in school"
+    },
+    {
+      "id": "edu_02",
+      "somali": "Fasalkee ayuu ku jiraa?",
+      "hypothesis": "Which section?",
+      "references": [
+        "Yuko darasa gani?",
+        "Yuko gredi gani?"
+      ],
+      "english": "What grade is he/she in?"
+    },
+    {
+      "id": "edu_03",
+      "somali": "IEP waa maxay?",
+      "hypothesis": "",
+      "references": [
+        "IEP ni nini?",
+        "Maana ya IEP ni nini?"
+      ],
+      "english": "What is an IEP?"
+    },
+    {
+      "id": "edu_04",
+      "somali": "Waraaqaha qorista waa kuwee?",
+      "hypothesis": "",
+      "references": [
+        "Nyaraka za usajili ni zipi?",
+        "Hati zipi zinahitajika kwa usajili?"
+      ],
+      "english": "What documents are needed for registration?"
+    },
+    {
+      "id": "edu_05",
+      "somali": "Cunugayga uma hadlin Ingiriisi",
+      "hypothesis": "",
+      "references": [
+        "Mtoto wangu hazungumzi Kiingereza",
+        "Mwanangu haongei Kiingereza"
+      ],
+      "english": "My child doesn't speak English"
+    },
+    {
+      "id": "edu_06",
+      "somali": "Goorma ayay iskuulka bilaabataa?",
+      "hypothesis": "",
+      "references": [
+        "Shule huanza lini?",
+        "Shule inaanza saa ngapi?"
+      ],
+      "english": "When does school start?"
+    },
+    {
+      "id": "edu_07",
+      "somali": "Ma jiraa barnaamij cunto bilaash ah?",
+      "hypothesis": "Je, kuna programu ya chakula bure?",
+      "references": [
+        "Je, kuna programu ya chakula cha bure?",
+        "Kuna mpango wa chakula bila malipo?"
+      ],
+      "english": "Is there a free lunch program?"
+    },
+    {
+      "id": "edu_08",
+      "somali": "Macalinka aan la hadlo sida?",
+      "hypothesis": "Ninakwambia nini kuhusu huyo?\" au \"Nadhani nini kuhusu huyo?\"?",
+      "references": [
+        "Ninawezaje kuwasiliana na mwalimu?",
+        "Niongee vipi na mwalimu?"
+      ],
+      "english": "How do I contact the teacher?"
+    },
+    {
+      "id": "edu_09",
+      "somali": "Cunugayga wuxuu u baahan yahay caawinaad gaar ah",
+      "hypothesis": "",
+      "references": [
+        "Mtoto wangu anahitaji msaada maalum",
+        "Mwanangu anahitaji huduma maalum"
+      ],
+      "english": "My child needs special assistance"
+    },
+    {
+      "id": "edu_10",
+      "somali": "Bus-ka iskuulka xaggee ayaa la sugaa?",
+      "hypothesis": "Swahili:",
+      "references": [
+        "Basi la shule linangojewa wapi?",
+        "Kituo cha basi ya shule kiko wapi?"
+      ],
+      "english": "Where is the school bus stop?"
+    }
+  ]
+}
