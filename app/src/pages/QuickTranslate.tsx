@@ -123,6 +123,7 @@ export function QuickTranslate() {
               className="input-field"
             >
               <option value="so">Somali</option>
+              <option value="sw">Swahili</option>
               <option value="ti" disabled>Tigrinya (soon)</option>
               <option value="prs" disabled>Dari (soon)</option>
             </select>
@@ -144,6 +145,7 @@ export function QuickTranslate() {
               className="input-field"
             >
               <option value="sw">Swahili</option>
+              <option value="so">Somali</option>
               <option value="ar" disabled>Arabic (soon)</option>
               <option value="tr" disabled>Turkish (soon)</option>
             </select>

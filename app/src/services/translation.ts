@@ -14,21 +14,26 @@ import { calculateConfidence, type ConfidenceComponents } from '../types/confide
 const DARAJA_MODELS: Record<string, string> = {
   // Fine-tuned directions (trained)
   'so-sw': 'daraja-so-sw',
+  // Reverse direction uses base model with prompt engineering
+  'sw-so': 'gemma3:4b',
   // Placeholder for future fine-tunes
   'ti-ar': 'daraja-ti-ar',
   'prs-tr': 'daraja-prs-tr',
 };
 
-// Directions not supported by fine-tuned models (require base model or future training)
-const UNSUPPORTED_DIRECTIONS = ['sw-so', 'ar-ti', 'tr-prs'];
+// Directions that use base model instead of fine-tuned (different prompt format)
+const BASE_MODEL_DIRECTIONS = ['sw-so', 'ar-ti', 'tr-prs'];
+
+// Directions not yet implemented at all
+const UNSUPPORTED_DIRECTIONS = ['ar-ti', 'tr-prs'];
 
 /**
- * Build translation prompt for Daraja models
+ * Build translation prompt for fine-tuned Daraja models
  *
  * Uses the exact format the model was trained on:
  * "Translate {Source} to {Target}:\n{text}\n{Target}:\n"
  */
-function buildTranslationPrompt(
+function buildFinetunedPrompt(
   text: string,
   sourcePair: LanguagePair,
   domain?: string
@@ -38,6 +43,41 @@ function buildTranslationPrompt(
 
   // Match training format exactly
   return `Translate ${sourcePair.source.name} to ${sourcePair.target.name}:\n${inputText}\n${sourcePair.target.name}:\n`;
+}
+
+/**
+ * Build translation prompt for base models (Sw→So and other reverse directions)
+ *
+ * Uses instruction format for better base model performance
+ */
+function buildBaseModelPrompt(
+  text: string,
+  sourcePair: LanguagePair,
+  domain?: string
+): string {
+  const domainContext = domain
+    ? `This is a ${domain} context. `
+    : '';
+
+  return `You are a translator. ${domainContext}Translate the following ${sourcePair.source.name} text to ${sourcePair.target.name}. Output ONLY the ${sourcePair.target.name} translation, nothing else.
+
+${sourcePair.source.name}: ${text}
+${sourcePair.target.name}:`;
+}
+
+/**
+ * Build appropriate prompt based on translation direction
+ */
+function buildTranslationPrompt(
+  text: string,
+  sourcePair: LanguagePair,
+  domain?: string,
+  useBaseModel: boolean = false
+): string {
+  if (useBaseModel) {
+    return buildBaseModelPrompt(text, sourcePair, domain);
+  }
+  return buildFinetunedPrompt(text, sourcePair, domain);
 }
 
 /**
@@ -135,16 +175,17 @@ export async function translate(
     );
   }
 
-  // Get the model name
+  // Get the model name and determine if using base model
   const pairKey = `${request.sourceLang}-${request.targetLang}`;
+  const useBaseModel = BASE_MODEL_DIRECTIONS.includes(pairKey);
 
-  // Check if direction is supported
+  // Check if direction is completely unsupported
   if (UNSUPPORTED_DIRECTIONS.includes(pairKey)) {
     const latencyMs = Date.now() - startTime;
     return {
       id: `tr-unsupported-${Date.now()}`,
       sourceText: request.text,
-      translatedText: `[${pair.target.name} → ${pair.source.name} direction requires base Gemma model - coming soon]`,
+      translatedText: `[${pair.source.name} → ${pair.target.name} translation coming soon]`,
       sourceLang: request.sourceLang,
       targetLang: request.targetLang,
       confidence: 0,
@@ -157,18 +198,19 @@ export async function translate(
 
   const modelName = DARAJA_MODELS[pairKey] || 'daraja-so-sw';
 
-  // Build the prompt
-  const prompt = buildTranslationPrompt(request.text, pair, request.domain);
+  // Build the appropriate prompt based on model type
+  const prompt = buildTranslationPrompt(request.text, pair, request.domain, useBaseModel);
 
   try {
     // Call Ollama with confidence metrics
+    // Use different parameters for base model vs fine-tuned
     const ollamaResponse = await ollamaClient.generateWithConfidence({
       model: modelName,
       prompt,
       options: {
-        temperature: 0,
+        temperature: useBaseModel ? 0.1 : 0,
         top_p: 0.9,
-        num_predict: 100,
+        num_predict: useBaseModel ? 80 : 100,
         stop: ['\n'], // Stop at first newline (translation complete)
       },
     });

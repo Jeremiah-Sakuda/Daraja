@@ -109,7 +109,7 @@ export const LANGUAGE_PAIRS: LanguagePair[] = [
     modelName: 'daraja-prs-tr',
     status: 'available',
   },
-  // Reverse direction pairs for bidirectional support
+  // Reverse direction pairs for bidirectional support (using base Gemma 3)
   {
     id: 'sw-so',
     source: {
@@ -126,7 +126,7 @@ export const LANGUAGE_PAIRS: LanguagePair[] = [
       script: 'Latin',
       direction: 'ltr',
     },
-    modelName: 'daraja-sw-so',
+    modelName: 'gemma3:4b',
     status: 'available',
   },
   {
