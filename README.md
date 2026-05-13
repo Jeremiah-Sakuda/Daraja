@@ -2,6 +2,10 @@
 
 **Self-distilling translation for low-resource humanitarian language pairs**
 
+🌐 **Live Demo:** [daraja-app-394688461042.us-central1.run.app](https://daraja-app-394688461042.us-central1.run.app)
+
+> ⚠️ The live demo requires [Ollama](https://ollama.ai) running locally with the `daraja-so-sw` model for translation to work. The demo UI is hosted, but translation calls go to `localhost:11434`.
+
 Daraja (Swahili for "bridge") is a translation pipeline that creates offline-capable translation models for language pairs underserved by commercial translation services. It targets humanitarian use cases like refugee status determination interviews, medical intake, and legal documentation.
 
 ## The Problem
