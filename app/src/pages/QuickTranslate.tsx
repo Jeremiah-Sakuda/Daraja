@@ -1,10 +1,12 @@
 import { useState, useCallback } from 'react';
-import { ArrowRightLeft, Languages, Loader2, Copy, Check, Volume2 } from 'lucide-react';
+import { ArrowRightLeft, Languages, Loader2, Copy, Check, Volume2, VolumeX } from 'lucide-react';
 import { VoiceInput } from '../components/input/VoiceInput';
 import { TextInput } from '../components/input/TextInput';
 import { ConfidenceBadge } from '../components/translation/ConfidenceBadge';
 import { LANGUAGE_PAIRS } from '../types/translation';
 import type { ConfidenceLevel } from '../types/translation';
+import { translate } from '../services/translation';
+import { ttsService } from '../services/tts';
 
 interface TranslationResult {
   sourceText: string;
@@ -21,6 +23,7 @@ export function QuickTranslate() {
   const [isTranslating, setIsTranslating] = useState(false);
   const [result, setResult] = useState<TranslationResult | null>(null);
   const [copied, setCopied] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
 
   const activePair = LANGUAGE_PAIRS.find(
     (p) => p.source.code === sourceLang && p.target.code === targetLang
@@ -40,27 +43,26 @@ export function QuickTranslate() {
     setResult(null);
 
     try {
-      // Simulate translation (in production, this calls Ollama)
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      // Mock result
-      const mockConfidence = 0.7 + Math.random() * 0.25;
-      const confidenceLevel: ConfidenceLevel =
-        mockConfidence >= 0.8 ? 'high' : mockConfidence >= 0.5 ? 'medium' : 'low';
+      // Call Ollama translation service
+      const response = await translate({
+        text: text.trim(),
+        sourceLang,
+        targetLang,
+      });
 
       setResult({
-        sourceText: text,
-        translatedText: `[Translation of: "${text.slice(0, 50)}${text.length > 50 ? '...' : ''}"]`,
-        confidence: mockConfidence,
-        confidenceLevel,
-        timestamp: Date.now(),
+        sourceText: response.sourceText,
+        translatedText: response.translatedText,
+        confidence: response.confidence,
+        confidenceLevel: response.confidenceLevel,
+        timestamp: response.timestamp,
       });
     } catch (error) {
       console.error('Translation failed:', error);
     } finally {
       setIsTranslating(false);
     }
-  }, []);
+  }, [sourceLang, targetLang]);
 
   const handleVoiceTranscription = useCallback((text: string) => {
     setInputText(text);
@@ -73,6 +75,25 @@ export function QuickTranslate() {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }, [result]);
+
+  const handleSpeak = useCallback(async () => {
+    if (!result) return;
+
+    if (isSpeaking) {
+      ttsService.stop();
+      setIsSpeaking(false);
+      return;
+    }
+
+    setIsSpeaking(true);
+    try {
+      await ttsService.speak(result.translatedText, { lang: targetLang });
+    } catch (error) {
+      console.error('TTS error:', error);
+    } finally {
+      setIsSpeaking(false);
+    }
+  }, [result, targetLang, isSpeaking]);
 
   const getLanguageName = (code: string): string => {
     for (const pair of LANGUAGE_PAIRS) {
@@ -234,9 +255,21 @@ export function QuickTranslate() {
               )}
             </button>
 
-            <button className="btn-secondary flex-1" disabled>
-              <Volume2 className="w-4 h-4 mr-2" />
-              Listen
+            <button
+              onClick={handleSpeak}
+              className="btn-secondary flex-1"
+            >
+              {isSpeaking ? (
+                <>
+                  <VolumeX className="w-4 h-4 mr-2" />
+                  Stop
+                </>
+              ) : (
+                <>
+                  <Volume2 className="w-4 h-4 mr-2" />
+                  Listen
+                </>
+              )}
             </button>
           </div>
 
