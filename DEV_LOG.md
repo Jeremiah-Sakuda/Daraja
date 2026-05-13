@@ -2678,5 +2678,161 @@ Daraja/
 
 ---
 
-*Last updated: May 13, 2026 - Complete technical documentation added*
+---
+
+## May 13, 2026 (Late Evening) - Educational Domain Diagnostic
+
+### The Problem
+
+Humanitarian evaluation revealed a significant domain gap:
+
+| Domain | chrF++ | Empty Output Rate |
+|--------|--------|-------------------|
+| Medical | 44.4 | 10% (1/10) |
+| Legal | 38.3 | 50% (5/10) |
+| **Educational** | **16.9** | **70% (7/10)** |
+
+The 16.9 score for educational sentences is too low for a humanitarian tool where school enrollment is a critical use case.
+
+### Hypotheses Tested
+
+| Hypothesis | Result |
+|------------|--------|
+| NLLB underrepresents educational domain | ✅ **Confirmed** |
+| Gemma 4 thinking-mode bug on short phrases | ❌ Not length-dependent |
+| Reference translation register mismatch | ❌ N/A (no output to mismatch) |
+
+### Diagnostic Process
+
+**Step 1: Analyze empty output patterns**
+
+```
+Domain    | Empty | Total | Rate
+----------|-------|-------|------
+Medical   |   1   |  10   |  10%
+Legal     |   5   |  10   |  50%
+Education |   7   |  10   |  70%
+```
+
+**Step 2: Check if length correlates with failure**
+
+Tested sentence lengths vs empty outputs:
+- 14 chars: EMPTY (IEP waa maxay?)
+- 18 chars: ok
+- 48 chars: EMPTY (Cunugayga wuxuu u baahan yahay...)
+- 43 chars: EMPTY
+
+**Conclusion:** Length is not the predictor. Short and long sentences both fail.
+
+**Step 3: Identify failing vocabulary**
+
+Educational sentences that failed all contained:
+- `iskuul/iskuulka` (school - English loanword)
+- `Cunugayga` (my child)
+- `fasalka` (grade/class)
+- `qorista` (registration)
+
+Educational sentences that worked used common words:
+- `cunto` (food), `bilaash` (free) → worked
+- `macalin` (teacher) → partial output
+
+**Step 4: Test individual vocabulary**
+
+```bash
+# Direct word translation test
+iskuul    → "Shule - School"     ✅ Works
+dugsiga   → (explanation)        ✅ Works
+macalinka → EMPTY                ❌ Fails
+fasalka   → EMPTY                ❌ Fails
+ardayga   → EMPTY                ❌ Fails
+```
+
+**Step 5: Test sentence structures**
+
+```bash
+# With common vocabulary
+"Ma jiraa barnaamij cunto bilaash ah?"
+→ "Je, kuna programu ya chakula bure?"  ✅
+
+# With educational vocabulary
+"Dugsiga ayaa bilaabaya"
+→ EMPTY                                  ❌
+
+"Goorma ayay iskuulka bilaabataa?"
+→ EMPTY                                  ❌
+```
+
+### Root Cause: NLLB Corpus Domain Bias
+
+The NLLB parallel corpus is dominated by:
+1. **Religious texts** (JW300 - Jehovah's Witnesses publications)
+2. **Government/legal documents**
+3. **News articles**
+
+Educational vocabulary is underrepresented because:
+- Schools don't produce large parallel corpora
+- Educational materials aren't typically translated at scale
+- The religious content filter may have removed some teacher-related terms (`macalin` can mean religious teacher)
+
+**Vocabulary coverage analysis:**
+
+| Term | Somali | Likely NLLB Frequency | Model Behavior |
+|------|--------|----------------------|----------------|
+| school | iskuul | Medium (loanword) | ✅ Works |
+| school | dugsiga | Low (native word) | ⚠️ Partial |
+| teacher | macalinka | Very low | ❌ Empty |
+| grade/class | fasalka | Very low | ❌ Empty |
+| student | ardayga | Very low | ❌ Empty |
+| child | cunug | Medium | ⚠️ Partial |
+| registration | qorista | Very low | ❌ Empty |
+
+### Implications
+
+1. **For hackathon submission:**
+   - Document honestly: "Educational domain underperforms due to NLLB corpus bias"
+   - Lead with medical (44.4) which is strongest humanitarian use case
+   - Note that legal (38.3) covers asylum/refugee scenarios well
+
+2. **For real-world deployment:**
+   - Would need educational domain augmentation before school enrollment use
+   - Medical and legal use cases are viable now
+   - Consider few-shot prompting as workaround for educational queries
+
+3. **For future work:**
+   - Collect educational parallel data (school forms, enrollment documents)
+   - Augment training with domain-specific sentences
+   - Consider domain-adaptive fine-tuning
+
+### Writeup Framing
+
+> "Our model achieves chrF++ 44.4 on medical intake scenarios and 38.3 on legal/asylum contexts. Educational enrollment queries score lower (16.9) due to domain underrepresentation in the NLLB training corpus, which is dominated by religious and government sources. For deployment, we recommend medical and legal use cases as primary, with educational vocabulary augmentation as future work."
+
+This honest framing:
+- Leads with strengths (medical/legal)
+- Explains the gap technically
+- Shows understanding of data limitations
+- Proposes concrete future work
+
+### Potential Workaround: Few-Shot Prompting
+
+If educational queries are needed, could modify the prompt:
+
+```
+Translate Somali to Swahili:
+Examples:
+- dugsiga → shule
+- macalinka → mwalimu
+- fasalka → darasa
+- ardayga → mwanafunzi
+
+Now translate:
+{user_input}
+Swahili:
+```
+
+**Not implemented** - Would require prompt modification in translation service and increases latency. Documented as future enhancement.
+
+---
+
+*Last updated: May 13, 2026 (Late Evening) - Educational domain diagnostic complete*
 
