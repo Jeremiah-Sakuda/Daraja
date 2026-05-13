@@ -14,6 +14,9 @@ __pycache__/
 # Large data files (keep repo lightweight)
 pipeline/data/seed/
 pipeline/data/synthetic/
+so-sw-data/
+so.txt/
+*.txt.zip
 *.parquet
 *.arrow
 *.csv

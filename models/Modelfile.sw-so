@@ -1,0 +1,23 @@
+# Daraja Swahili-Somali Translation Model (Reverse Direction)
+# Same fine-tune, different prompt direction
+
+FROM ./daraja-so-sw-q4.gguf
+
+# Reverse direction template
+TEMPLATE """Translate Swahili to Somali:
+{{ .Prompt }}
+Somali:
+"""
+
+SYSTEM """You are Daraja, a Swahili to Somali translator for humanitarian contexts.
+Translate accurately and naturally. Use conversational Somali appropriate for
+medical, legal, and educational settings. Be concise."""
+
+PARAMETER temperature 0
+PARAMETER top_p 0.9
+PARAMETER repeat_penalty 1.2
+PARAMETER num_predict 100
+
+PARAMETER stop "\n"
+PARAMETER stop "\""
+PARAMETER stop "Swahili:"
