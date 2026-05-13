@@ -12,14 +12,15 @@ import { getConfidenceLevel, LANGUAGE_PAIRS } from '../types/translation';
 import { calculateConfidence, type ConfidenceComponents } from '../types/confidence';
 
 const DARAJA_MODELS: Record<string, string> = {
+  // Fine-tuned directions (trained)
   'so-sw': 'daraja-so-sw',
+  // Placeholder for future fine-tunes
   'ti-ar': 'daraja-ti-ar',
   'prs-tr': 'daraja-prs-tr',
-  // Reverse direction models
-  'sw-so': 'daraja-sw-so',
-  'ar-ti': 'daraja-ar-ti',
-  'tr-prs': 'daraja-tr-prs',
 };
+
+// Directions not supported by fine-tuned models (require base model or future training)
+const UNSUPPORTED_DIRECTIONS = ['sw-so', 'ar-ti', 'tr-prs'];
 
 /**
  * Build translation prompt for Daraja models
@@ -136,6 +137,24 @@ export async function translate(
 
   // Get the model name
   const pairKey = `${request.sourceLang}-${request.targetLang}`;
+
+  // Check if direction is supported
+  if (UNSUPPORTED_DIRECTIONS.includes(pairKey)) {
+    const latencyMs = Date.now() - startTime;
+    return {
+      id: `tr-unsupported-${Date.now()}`,
+      sourceText: request.text,
+      translatedText: `[${pair.target.name} → ${pair.source.name} direction requires base Gemma model - coming soon]`,
+      sourceLang: request.sourceLang,
+      targetLang: request.targetLang,
+      confidence: 0,
+      confidenceLevel: 'low',
+      flaggedSegments: [],
+      timestamp: Date.now(),
+      latencyMs,
+    };
+  }
+
   const modelName = DARAJA_MODELS[pairKey] || 'daraja-so-sw';
 
   // Build the prompt
