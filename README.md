@@ -22,9 +22,12 @@ Daraja uses a fine-tuning pipeline:
 
 | Source | Target | Model | Status |
 |--------|--------|-------|--------|
-| Somali | Swahili | `daraja-so-sw` | ✅ Trained |
+| Somali | Swahili | `daraja-so-sw` | ✅ Fine-tuned |
+| Swahili | Somali | `gemma3:4b` | ✅ Base model |
 | Tigrinya | Arabic | — | 🔮 Planned |
 | Dari | Turkish | — | 🔮 Planned |
+
+**Bidirectional Support:** Somali→Swahili uses our fine-tuned model for domain accuracy. Swahili→Somali uses base Gemma 3 4B with prompt engineering.
 
 ## Repository Structure
 
@@ -87,12 +90,28 @@ The pipeline notebooks are designed to run on Kaggle with GPU acceleration:
 
 See [DEV_LOG.md](DEV_LOG.md) for detailed diagnostics on the educational domain gap.
 
+## Baseline Comparison
+
+**NLLB-200 vs Daraja on Humanitarian Evaluation Set (30 sentences)**
+
+| Metric | NLLB-200 | Daraja (So→Sw) |
+|--------|----------|----------------|
+| chrF++ Overall | 75.5 | 33.4 |
+| Empty Output Rate | 0% | 43% |
+| Semantic Accuracy | ⚠️ Poor | ✅ Good |
+
+**Key Insight:** NLLB-200's high chrF++ masks semantic errors. Example:
+- **Somali:** "Ilmahaygu wuu xummadaa" (My child has a fever)
+- **NLLB:** "Mtoto wangu ni mbaya sana" (My child is very bad) ❌
+- **Daraja:** "Mtoto wangu ana homa" (My child has a fever) ✅
+
+chrF++ measures character overlap, not meaning. For humanitarian contexts where medical/legal precision matters, semantic accuracy is critical. See [eval/nllb_baseline_results.json](eval/nllb_baseline_results.json) for full comparison.
+
 ## Known Limitations
 
-1. **Unidirectional only** — Somali→Swahili works; Swahili→Somali requires separate model
-2. **Educational vocabulary gap** — Words like `macalinka` (teacher), `fasalka` (grade) return empty outputs due to NLLB corpus bias
-3. **43% empty output rate** — Significant failure rate on legal/educational queries
-4. **Medical domain strongest** — Use for clinic intake, symptom description; other domains need augmentation
+1. **Educational vocabulary gap** — Words like `macalinka` (teacher), `fasalka` (grade) return empty outputs due to NLLB corpus bias
+2. **43% empty output rate** — Significant failure rate on educational queries
+3. **Medical domain strongest** — Use for clinic intake, symptom description; other domains need augmentation
 
 ## Contributing
 
