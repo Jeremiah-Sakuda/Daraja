@@ -46,9 +46,9 @@ export interface TranslatedOcrResult extends OcrResult {
 
 // Vision model configurations
 const VISION_MODELS = {
-  default: 'llava:13b',
+  default: 'gemma4:e4b',
   fast: 'llava:7b',
-  gemma: 'gemma-vision:latest',
+  gemma: 'gemma4:e4b',
 } as const;
 
 // Document type detection prompts
@@ -100,12 +100,13 @@ class DocumentOcrService {
         return false;
       }
 
-      // Check if a vision model is available
+      // Check if a vision model is available (Gemma 4 has multimodal support)
       const models = await ollamaClient.listModels();
       const hasVisionModel = models.some(
         (m) =>
           m.name.includes('llava') ||
           m.name.includes('vision') ||
+          m.name.includes('gemma4') ||
           m.name.includes('gemma')
       );
 

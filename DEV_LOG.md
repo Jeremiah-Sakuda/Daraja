@@ -3037,7 +3037,7 @@ All phases complete as of May 13, 2026:
 | 1.1 | README rewrite | ✅ |
 | 1.2 | NLLB-200 baseline (chrF++ 75.5, semantic errors) | ✅ |
 | 1.3 | HuggingFace model card | ✅ |
-| 2 | Bidirectional translation (Sw→So via Gemma 3) | ✅ |
+| 2 | Bidirectional translation (Sw→So via Gemma 4) | ✅ |
 | 3 | Audio capability research | ✅ |
 | 4 | Medication Safety vision feature | ✅ |
 | 6 | Deploy to Cloud Run | ✅ |
@@ -3052,4 +3052,77 @@ All phases complete as of May 13, 2026:
 ---
 
 *Last updated: May 13, 2026 (Night) - All Grand Prize Plan phases complete, deployed to Cloud Run*
+
+---
+
+## May 13, 2026 (Late Night) - Gemma 4 Integration & Honest Assessment
+
+### Issue Addressed: Gemma 3 in a Gemma 4 Hackathon
+
+The reviewer feedback identified that using Gemma 3 for vision and bidirectional features in a **Gemma 4** hackathon was problematic. A careful judge could question whether we actually used Gemma 4 throughout the platform.
+
+### Changes Made
+
+**1. Translation Service (`app/src/services/translation.ts`)**
+- Changed bidirectional (Sw→So) model from `gemma3:4b` to `gemma4:e4b`
+- Model is 9.6GB, takes longer to load but produces output
+
+**2. Document OCR Service (`app/src/services/documentOcr.ts`)**
+- Changed default vision model from `llava:13b` to `gemma4:e4b`
+- Updated model availability check to detect `gemma4` models
+
+### Testing Results
+
+**Model availability:**
+```
+gemma4:e4b    9.6 GB    (multimodal, 9B parameters)
+gemma3:4b     3.3 GB    (used previously)
+daraja-so-sw  3.4 GB    (fine-tuned on Gemma 2B)
+```
+
+**Translation test (Sw→So):**
+- Input: "Mtoto wangu ana homa" (My child has a fever)
+- Output: Somali text produced (quality varies)
+- Key improvement: Produces actual Somali text
+
+**Build verification:**
+- `npm run build` ✅ (24.26s)
+- All 1499 modules transformed
+- PWA generated successfully
+
+### NLLB-200 vs Daraja Quality Comparison
+
+Created `eval/nllb_vs_daraja_comparison.md` with side-by-side analysis. **Critical finding:**
+
+| ID | English | NLLB-200 | Daraja | Winner |
+|----|---------|----------|--------|--------|
+| med_01 | My child has a fever | "My child is very bad" | "I have a boy" | **Neither** |
+| med_05 | My stomach hurts | ✅ Correct | "I am very scared" | **NLLB** |
+| med_06 | Are you pregnant? | ✅ Correct | "Are you working?" | **NLLB** |
+| med_09 | I have trouble breathing | ✅ Correct | ✅ Correct | **Tie** |
+
+**Medical domain score: NLLB wins 7-8 out of 10**
+
+### Honest Assessment
+
+The "semantic error" framing for NLLB-200 was based on a single example (med_01: "fever" → "very bad"). This was NLLB's worst case, not representative.
+
+**Reality:**
+- NLLB-200 chrF++ 75.5, mostly correct translations
+- Daraja chrF++ 33.4, 43% empty outputs, multiple semantic errors
+
+**Honest framing options for submission:**
+1. Position as methodology + infrastructure contribution (pipeline, benchmark, offline architecture)
+2. Acknowledge quality gap, highlight confidence routing as mitigation
+3. Focus on what we learned rather than claiming SOTA quality
+
+### Files Modified
+- `app/src/services/translation.ts` - Line 18: `'sw-so': 'gemma4:e4b'`
+- `app/src/services/documentOcr.ts` - Lines 48-52: Vision model config
+- `app/src/services/documentOcr.ts` - Line 109: Model detection
+- `eval/nllb_vs_daraja_comparison.md` - New comparison document
+
+---
+
+*Last updated: May 13, 2026 (Late Night) - Gemma 4 integration complete, quality gap documented honestly*
 

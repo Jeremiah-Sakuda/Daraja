@@ -16,8 +16,8 @@ Daraja is a self-distilling translation pipeline designed for low-resource human
 ├─────────────────────────────────────────────────────────────────────────────┤
 │                                                                              │
 │  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐                      │
-│  │    OPUS     │    │   JW300     │    │ Flores-200  │                      │
-│  │  (parallel) │    │  (aligned)  │    │ (benchmark) │                      │
+│  │    NLLB     │    │  Masakhane  │    │ Flores-200  │                      │
+│  │  (parallel) │    │  (African)  │    │ (benchmark) │                      │
 │  └──────┬──────┘    └──────┬──────┘    └──────┬──────┘                      │
 │         │                  │                  │                              │
 │         └──────────────────┼──────────────────┘                              │
@@ -139,8 +139,9 @@ Daraja is a self-distilling translation pipeline designed for low-resource human
 
 **Components:**
 - `SeedDataLoader` - Unified interface for loading from multiple sources
-- OPUS API integration for JW300, WikiMatrix, CCAligned
+- OPUS API integration for NLLB, WikiMatrix, Masakhane
 - HuggingFace Datasets integration for Flores-200
+- Religious content filtering (JW300 explicitly excluded)
 
 **Output:** Deduplicated parallel text files (~15-50K pairs per language pair)
 

@@ -14,8 +14,8 @@ import { calculateConfidence, type ConfidenceComponents } from '../types/confide
 const DARAJA_MODELS: Record<string, string> = {
   // Fine-tuned directions (trained)
   'so-sw': 'daraja-so-sw',
-  // Reverse direction uses base model with prompt engineering
-  'sw-so': 'gemma3:4b',
+  // Reverse direction uses Gemma 4 E4B with prompt engineering
+  'sw-so': 'gemma4:e4b',
   // Placeholder for future fine-tunes
   'ti-ar': 'daraja-ti-ar',
   'prs-tr': 'daraja-prs-tr',

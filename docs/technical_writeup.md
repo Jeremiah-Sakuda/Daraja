@@ -152,16 +152,21 @@ Evaluated on 30-sentence humanitarian test set (medical, legal, educational doma
 | Legal | 38.3 | 50% |
 | Educational | 16.9 | 70% |
 
-### 4.2 Semantic Accuracy
+### 4.2 Semantic Accuracy Analysis
 
-While NLLB-200 achieves higher chrF++, it produces critical semantic errors:
+Side-by-side comparison on the medical domain test set (10 sentences):
 
-| Phrase | NLLB Translation | Issue |
-|--------|-----------------|-------|
-| "My child has a fever" | "My child is very bad" | Medical misdiagnosis risk |
-| "Where does it hurt?" | "Where do you suffer?" | Less precise |
+| Sentence | NLLB-200 | Daraja | Winner |
+|----------|----------|--------|--------|
+| "My child has a fever" | "My child is very bad" ❌ | "I have a boy" ❌ | Neither |
+| "My stomach hurts" | ✅ Correct | "I am very scared" ❌ | NLLB |
+| "Are you pregnant?" | ✅ Correct | "Are you working?" ❌ | NLLB |
+| "I have trouble breathing" | ✅ Correct | ✅ Correct | Tie |
+| "I need a doctor" | ✅ Correct | ✅ (with English mixing) | NLLB |
 
-Daraja produces semantically accurate translations in supported domains.
+**Result:** NLLB-200 wins 7-8 out of 10 medical sentences.
+
+**Honest Assessment:** The chrF++ gap reflects real quality differences. NLLB-200 outperforms Daraja on most translation tasks. Daraja's contribution is the infrastructure for offline deployment and confidence routing, not superior translation quality.
 
 ### 4.3 Confidence Routing Performance
 
@@ -186,7 +191,7 @@ The Daraja demo application provides:
 
 1. **43% empty output rate**: Vocabulary coverage failure on educational domain terms (`iskuulka`, `macalinka`, `fasalka`)
 2. **NLLB corpus bias**: Training data underrepresents educational vocabulary, overrepresents religious content
-3. **Unidirectional fine-tuning**: So→Sw fine-tuned; Sw→So uses base Gemma 3 with prompt engineering
+3. **Unidirectional fine-tuning**: So→Sw fine-tuned; Sw→So uses base Gemma 4 E4B with prompt engineering
 4. **Dialect variation**: Trained on standard Somali; regional variants untested
 5. **Small evaluation set**: 30-sentence test set limits statistical significance
 

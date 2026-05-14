@@ -96,13 +96,20 @@ Swahili:
 |--------|----------|--------------|
 | chrF++ | 75.5 | 33.4 |
 | Empty Rate | 0% | 43% |
-| Semantic Accuracy | Poor | Good |
+| Medical Domain | Wins 7-8/10 | — |
 
-**Key Finding:** NLLB-200's high chrF++ score masks critical semantic errors:
-- "My child has a fever" → NLLB: "My child is very bad" ❌
-- "My child has a fever" → Daraja: "My child has a fever" ✅
+**Honest Assessment:** NLLB-200 outperforms Daraja on most sentences. The chrF++ gap reflects real quality differences. Both models have edge-case semantic errors:
 
-For humanitarian contexts, semantic accuracy matters more than character overlap.
+| Input | NLLB-200 | Daraja |
+|-------|----------|--------|
+| "My child has a fever" | "My child is very bad" ❌ | "I have a boy" ❌ |
+| "I have trouble breathing" | ✅ Correct | ✅ Correct |
+
+**Daraja's Value Proposition:**
+- Confidence routing flags uncertain translations for human review
+- Offline-first design for low-connectivity humanitarian contexts
+- Infrastructure for fine-tuning additional language pairs
+- 90% success rate on medical domain queries
 
 ## Limitations
 

@@ -27,11 +27,11 @@ Daraja uses a fine-tuning pipeline:
 | Source | Target | Model | Status |
 |--------|--------|-------|--------|
 | Somali | Swahili | `daraja-so-sw` | ✅ Fine-tuned |
-| Swahili | Somali | `gemma3:4b` | ✅ Base model |
+| Swahili | Somali | `gemma4:e4b` | ✅ Gemma 4 base |
 | Tigrinya | Arabic | — | 🔮 Planned |
 | Dari | Turkish | — | 🔮 Planned |
 
-**Bidirectional Support:** Somali→Swahili uses our fine-tuned model for domain accuracy. Swahili→Somali uses base Gemma 3 4B with prompt engineering.
+**Bidirectional Support:** Somali→Swahili uses our fine-tuned model. Swahili→Somali uses Gemma 4 E4B (9B parameters) with prompt engineering.
 
 ## Repository Structure
 
@@ -102,14 +102,23 @@ See [DEV_LOG.md](DEV_LOG.md) for detailed diagnostics on the educational domain 
 |--------|----------|----------------|
 | chrF++ Overall | 75.5 | 33.4 |
 | Empty Output Rate | 0% | 43% |
-| Semantic Accuracy | ⚠️ Poor | ✅ Good |
+| Medical Domain Winner | NLLB (7-8/10) | — |
 
-**Key Insight:** NLLB-200's high chrF++ masks semantic errors. Example:
-- **Somali:** "Ilmahaygu wuu xummadaa" (My child has a fever)
-- **NLLB:** "Mtoto wangu ni mbaya sana" (My child is very bad) ❌
-- **Daraja:** "Mtoto wangu ana homa" (My child has a fever) ✅
+**Honest Assessment:** NLLB-200 outperforms Daraja on most translation tasks. The chrF++ gap reflects real quality differences. However, both models have semantic errors in edge cases:
 
-chrF++ measures character overlap, not meaning. For humanitarian contexts where medical/legal precision matters, semantic accuracy is critical. See [eval/nllb_baseline_results.json](eval/nllb_baseline_results.json) for full comparison.
+| Sentence | NLLB-200 | Daraja |
+|----------|----------|--------|
+| "My child has a fever" | "My child is very bad" ❌ | "I have a boy" ❌ |
+| "I have trouble breathing" | ✅ Correct | ✅ Correct |
+| "Are you pregnant?" | ✅ Correct | "Are you working?" ❌ |
+
+**What Daraja Offers:**
+- Confidence routing flags uncertain translations for human review
+- Offline-first design for deployment in low-connectivity areas
+- Infrastructure and methodology for fine-tuning on additional language pairs
+- 90% success rate on medical domain (strongest domain)
+
+See [eval/nllb_vs_daraja_comparison.md](eval/nllb_vs_daraja_comparison.md) for detailed side-by-side analysis.
 
 ## Known Limitations
 

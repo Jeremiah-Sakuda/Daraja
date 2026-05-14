@@ -6,10 +6,10 @@
 
 | Model | chrF++ | Empty Rate | Notes |
 |-------|--------|------------|-------|
-| NLLB-200-distilled-600M | 75.5 | 0% | Semantic errors |
-| daraja-so-sw (Gemma 2B QLoRA) | 33.4 | 43% | Better semantics |
+| NLLB-200-distilled-600M | 75.5 | 0% | Wins 7-8/10 medical |
+| daraja-so-sw (Gemma 2B QLoRA) | 33.4 | 43% | 90% medical success |
 
-**Key Finding:** NLLB-200's higher chrF++ masks critical semantic errors. For humanitarian contexts, semantic accuracy matters more than character overlap metrics.
+**Key Finding:** NLLB-200 outperforms Daraja on most translation tasks. The chrF++ gap reflects real quality differences. Daraja's value is in offline deployment, confidence routing, and infrastructure for future language pairs.
 
 ## Evaluation Setup
 
@@ -45,21 +45,23 @@
 
 ## Semantic Accuracy Analysis
 
-### NLLB-200 Semantic Errors
+### Side-by-Side Comparison (Medical Domain)
 
-Despite high chrF++, NLLB produces critical semantic errors:
+| Sentence | NLLB-200 | Daraja | Winner |
+|----------|----------|--------|--------|
+| My child has a fever | "My child is very bad" ❌ | "I have a boy" ❌ | Neither |
+| My stomach hurts | ✅ Correct | "I am very scared" ❌ | NLLB |
+| Are you pregnant? | ✅ Correct | "Are you working?" ❌ | NLLB |
+| I have trouble breathing | ✅ Correct | ✅ Correct | Tie |
+| I need a doctor | ✅ Correct | ✅ (English mixing) | NLLB |
 
-| Somali | English | NLLB Output | Correct |
-|--------|---------|-------------|---------|
-| Ilmahaygu wuu xummadaa | My child has a fever | Mtoto wangu ni mbaya sana (My child is very bad) | Mtoto wangu ana homa |
-| Xaggee baa ku xanuunaya? | Where does it hurt? | Unateseka wapi? (Where do you suffer?) | Unauma wapi? |
+**Medical Domain Score: NLLB wins 7-8 out of 10**
 
-### Why This Matters
+### Honest Assessment
 
-In humanitarian contexts:
-- "My child has a fever" → "My child is very bad" could delay medical attention
-- Semantic accuracy is more critical than character-level similarity
-- chrF++ measures orthographic overlap, not meaning preservation
+The "semantic error" framing was based on a single NLLB error case. NLLB-200 actually outperforms Daraja on most translation tasks. The chrF++ gap reflects real quality differences, not metric artifacts.
+
+**Daraja's value proposition:** Offline deployment, confidence routing, and infrastructure for future language pairs—not superior translation quality.
 
 ## Daraja Domain Analysis
 
@@ -139,10 +141,11 @@ Conclusion: Few-shot prompting unreliable for fine-tuned models trained in zero-
 
 ## Conclusions
 
-1. **Daraja outperforms NLLB on semantic accuracy** for humanitarian medical/legal translation despite lower chrF++ scores
-2. **43% empty output rate** is the primary deployment blocker, concentrated in educational domain
-3. **Medical domain is deployment-ready** with 90% success rate and good semantic accuracy
-4. **Future work:** Domain-specific data augmentation for educational vocabulary
+1. **NLLB-200 outperforms Daraja** on most translation tasks (7-8/10 medical sentences)
+2. **43% empty output rate** is the primary quality issue, concentrated in educational domain
+3. **Medical domain is strongest** with 90% success rate
+4. **Daraja's contribution:** Offline deployment infrastructure, confidence routing, methodology for fine-tuning additional low-resource language pairs
+5. **Future work:** Domain-specific data augmentation, improved vocabulary coverage
 
 ## References
 
