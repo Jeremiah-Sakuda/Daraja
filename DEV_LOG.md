@@ -2975,5 +2975,81 @@ Added new page `/medication` for reading medication labels:
 
 ---
 
-*Last updated: May 13, 2026 (Night) - Audio capability research complete, medication safety feature implemented*
+## Cloud Run Deployment (Phase 6)
+
+### Deployment Configuration
+
+**Live URL:** https://daraja-app-394688461042.us-central1.run.app
+
+**Architecture:**
+- Frontend: React + Vite PWA hosted on Cloud Run
+- Backend: Ollama runs locally on user's machine
+- Translation API: `localhost:11434` (requires local Ollama)
+
+**Files created:**
+- `app/Dockerfile` - Multi-stage build (Node builder + nginx server)
+- `app/nginx.conf` - SPA routing, gzip compression, security headers
+- `app/.dockerignore` - Excludes dev files from build
+
+**Dockerfile approach:**
+```dockerfile
+# Build stage - Node 20 Alpine
+FROM node:20-alpine AS builder
+# ... npm ci && npm run build
+
+# Production stage - nginx Alpine
+FROM nginx:alpine
+# ... copy dist to /usr/share/nginx/html
+EXPOSE 8080  # Cloud Run requirement
+```
+
+**Deployment command:**
+```bash
+gcloud run deploy daraja-app \
+  --source . \
+  --region us-central1 \
+  --allow-unauthenticated \
+  --port 8080
+```
+
+### Architecture Decision: Local Ollama
+
+The demo UI is hosted, but translation calls go to `localhost:11434`. This is intentional:
+
+1. **Offline-first design** - App works without internet after model download
+2. **No cloud GPU costs** - Inference runs on user hardware
+3. **Privacy** - Translation data never leaves user's device
+4. **Hackathon constraint** - No budget for GPU cloud instances
+
+**For judges/evaluators:**
+1. Install Ollama: https://ollama.ai
+2. Pull model: `ollama pull daraja-so-sw` (or create from Modelfile)
+3. Open demo URL with Ollama running
+
+---
+
+## Grand Prize Plan - Final Status
+
+All phases complete as of May 13, 2026:
+
+| Phase | Task | Status |
+|-------|------|--------|
+| 1.1 | README rewrite | ✅ |
+| 1.2 | NLLB-200 baseline (chrF++ 75.5, semantic errors) | ✅ |
+| 1.3 | HuggingFace model card | ✅ |
+| 2 | Bidirectional translation (Sw→So via Gemma 3) | ✅ |
+| 3 | Audio capability research | ✅ |
+| 4 | Medication Safety vision feature | ✅ |
+| 6 | Deploy to Cloud Run | ✅ |
+| 7.1 | Humanitarian eval benchmark dataset | ✅ |
+
+**Deliverables:**
+- Live Demo: https://daraja-app-394688461042.us-central1.run.app
+- GitHub: https://github.com/Jeremiah-Sakuda/Daraja
+- Model Card: `models/MODEL_CARD.md`
+- Benchmark: `eval/humanitarian_eval_benchmark/`
+
+---
+
+*Last updated: May 13, 2026 (Night) - All Grand Prize Plan phases complete, deployed to Cloud Run*
 
