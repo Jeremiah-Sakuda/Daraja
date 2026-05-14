@@ -41,26 +41,34 @@ This manifest documents all seed data sources used in the Daraja translation pip
 
 ---
 
-## NLLB Seed Data
+## NLLB Parallel Corpus (OPUS)
 
-**Description**: Meta's curated low-resource parallel data for No Language Left Behind project.
+**Description**: NLLB-derived Somali-Swahili parallel corpus from OPUS.
 
 **License**: CC-BY-SA 4.0
 
-**URL**: https://github.com/facebookresearch/fairseq/tree/nllb
+**URL**: https://opus.nlpl.eu/NLLB/corpus/version/NLLB
 
 **Coverage**:
-- Somali-English: ~5,000 pairs
-- Tigrinya-English: ~3,000 pairs
-- Arabic varieties: ~10,000 pairs
+- Somali-Swahili direct pairs: 630,267
+- After filtering: 281,000 retained
+- Used for training: 50,000
 
-**Usage**: Seed parallel corpus, pivoting through English
+**Filtering Applied**:
+1. Religious content removal (Bible/Quran/church terms)
+2. Length filtering (<100 characters)
+3. Length ratio filtering (0.5 < ratio < 2.0)
 
-**Retrieval Date**: 2026-04-27
+**Known Limitations**:
+- Underrepresents educational vocabulary
+- Overrepresents religious content (pre-filter)
+- Some semantic errors preserved from NLLB pipeline
 
-**SHA-256**: `[Pending download - run pipeline/scripts/download_seed_data.py]`
+**Usage**: Primary training corpus for So→Sw translation
 
-**File Path**: `pipeline/data/seed/nllb/`
+**Retrieval Date**: 2026-05-07
+
+**File Path**: `pipeline/data/seed/nllb/NLLB.so-sw.so`, `NLLB.so-sw.sw`
 
 ---
 
