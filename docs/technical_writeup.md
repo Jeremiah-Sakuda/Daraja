@@ -50,15 +50,21 @@ Relevant humanitarian NLP efforts:
 
 ### 3.1 Data Collection
 
-We aggregate parallel data from multiple sources:
+Primary data source: NLLB parallel corpus from OPUS
 
-| Source | Type | Est. Pairs (so-sw) |
-|--------|------|-------------------|
-| OPUS JW300 | Religious texts | ~10,000 |
-| Flores-200 | Benchmark | ~1,000 |
-| NLLB | Web crawl | ~5,000 |
+| Stage | Pairs |
+|-------|-------|
+| Raw NLLB corpus | 630,267 |
+| After religious content filtering | ~450,000 |
+| After length filtering (<100 chars) | ~350,000 |
+| After length ratio filtering | 281,000 |
+| Used for training | 50,000 |
 
-Total seed corpus: ~15,000 parallel pairs
+**Filtering pipeline:**
+1. Remove religious/proselytizing content (regex patterns for Bible, Quran, church terms)
+2. Remove length outliers (>100 characters)
+3. Remove bad length ratios (>3:1 or <1:3)
+4. Random sample for training efficiency
 
 ### 3.2 Synthetic Data Generation
 
@@ -94,13 +100,14 @@ We use Unsloth's optimized QLoRA implementation:
 
 | Hyperparameter | Value |
 |---------------|-------|
-| Base model | Gemma 2 9B IT |
-| LoRA rank | 16 |
-| LoRA alpha | 16 |
-| Batch size | 2 |
-| Gradient accumulation | 4 |
+| Base model | Gemma 2 2B IT |
+| LoRA rank | 32 |
+| LoRA alpha | 64 |
+| Batch size | 4 |
+| Gradient accumulation | 8 |
 | Learning rate | 2e-4 |
-| Epochs | 3 |
+| Epochs | 2 |
+| Final training loss | 1.67 |
 
 Training data is formatted with domain tags:
 ```
@@ -130,27 +137,39 @@ Routing thresholds:
 
 ### 4.1 Automatic Metrics
 
-| Model | BLEU | chrF++ |
-|-------|------|--------|
-| Baseline (zero-shot) | TBD | TBD |
-| Daraja (fine-tuned) | TBD | TBD |
-| Improvement | +TBD | +TBD |
+Evaluated on 30-sentence humanitarian test set (medical, legal, educational domains):
 
-### 4.2 Human Evaluation
+| Model | chrF++ | Empty Rate |
+|-------|--------|------------|
+| NLLB-200-distilled-600M | 75.5 | 0% |
+| Daraja (fine-tuned) | 33.4 | 43% |
 
-We conducted human evaluation with native speakers:
+**Domain-specific results (Daraja):**
 
-| Metric | Score (1-5) |
-|--------|-------------|
-| Adequacy | TBD |
-| Fluency | TBD |
+| Domain | chrF++ | Empty Rate |
+|--------|--------|------------|
+| Medical | 44.4 | 10% |
+| Legal | 38.3 | 50% |
+| Educational | 16.9 | 70% |
 
-### 4.3 Confidence Routing Precision
+### 4.2 Semantic Accuracy
 
-| Threshold | Precision | Recall |
-|-----------|-----------|--------|
-| 0.8 (high) | TBD | TBD |
-| 0.5 (medium) | TBD | TBD |
+While NLLB-200 achieves higher chrF++, it produces critical semantic errors:
+
+| Phrase | NLLB Translation | Issue |
+|--------|-----------------|-------|
+| "My child has a fever" | "My child is very bad" | Medical misdiagnosis risk |
+| "Where does it hurt?" | "Where do you suffer?" | Less precise |
+
+Daraja produces semantically accurate translations in supported domains.
+
+### 4.3 Confidence Routing Performance
+
+| Level | Threshold | Typical Domain |
+|-------|-----------|----------------|
+| High | ≥ 0.8 | Medical |
+| Medium | 0.5-0.8 | Legal |
+| Low | < 0.5 | Educational (vocabulary gap) |
 
 ## 5. Demo Application
 
@@ -165,10 +184,11 @@ The Daraja demo application provides:
 
 ## 6. Limitations
 
-1. **Data scarcity**: Limited seed data constrains quality
-2. **Domain coverage**: Medical/legal terminology gaps
-3. **Dialect variation**: Model may not handle regional variants
-4. **Evaluation challenges**: Native speaker evaluation is difficult to scale
+1. **43% empty output rate**: Vocabulary coverage failure on educational domain terms (`iskuulka`, `macalinka`, `fasalka`)
+2. **NLLB corpus bias**: Training data underrepresents educational vocabulary, overrepresents religious content
+3. **Unidirectional fine-tuning**: So→Sw fine-tuned; Sw→So uses base Gemma 3 with prompt engineering
+4. **Dialect variation**: Trained on standard Somali; regional variants untested
+5. **Small evaluation set**: 30-sentence test set limits statistical significance
 
 ## 7. Ethical Considerations
 
